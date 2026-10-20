@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Le Sculpteur — devenir la personne que l'on aspire à être</title>
+<title>Les métaphores — devenir qui l'on aspire à être</title>
 <style>
   :root{
     --ink:#0d0c0a;
-    --paper:#ece5d8;
+    --paper:#c9c1af;
     --gold:#d4af6e;
     --gold-dim:rgba(212,175,110,.35);
   }
@@ -20,8 +20,6 @@
     min-height:100vh;
     overflow-x:hidden;
   }
-
-  /* ---------- fond d'atelier ---------- */
   #bg{position:fixed;inset:0;z-index:0;pointer-events:none;
     background:
       radial-gradient(ellipse 50% 35% at 15% 18%, rgba(124,58,190,.38), transparent 70%),
@@ -33,77 +31,41 @@
       #050509;
   }
   #scrim{position:fixed;inset:0;z-index:0;pointer-events:none;
-    background:radial-gradient(ellipse 62% 74% at 50% 42%, rgba(4,4,8,.60), transparent 72%);
+    background:radial-gradient(ellipse 70% 60% at 50% 30%, rgba(4,4,8,.45), transparent 70%);
   }
   .star{position:fixed;border-radius:50%;z-index:0;pointer-events:none;
     animation:twinkle ease-in-out infinite;
   }
   @keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.95}}
 
-  /* ---------- écran d'entrée ---------- */
-  #entry{
-    position:fixed;inset:0;z-index:10;
-    display:flex;align-items:center;justify-content:center;
-    text-align:center;padding:2rem;
-    background:radial-gradient(ellipse 70% 60% at 50% 40%, rgba(212,175,110,.08), transparent 70%), var(--ink);
-    transition:opacity 1.2s ease;
-  }
-  #entry.hidden{opacity:0;pointer-events:none}
-  #entry .emoji{font-size:4rem;margin-bottom:1rem;filter:drop-shadow(0 0 25px rgba(212,175,110,.35))}
-  #entry h1{font-size:clamp(2.4rem,7vw,4rem);font-weight:normal;letter-spacing:.04em;color:var(--paper)}
-  #entry .subtitle{margin-top:.6rem;font-style:italic;color:#b9ac93;font-size:clamp(1rem,3vw,1.25rem)}
-  #enterBtn{
-    margin-top:2.5rem;
-    font-family:Georgia,serif;font-size:1.15rem;letter-spacing:.03em;
-    color:var(--ink);background:linear-gradient(160deg,#e8c987,var(--gold));
-    border:none;border-radius:999px;padding:1rem 2.6rem;cursor:pointer;
-    box-shadow:0 0 35px rgba(212,175,110,.35);
-    transition:transform .25s ease, box-shadow .25s ease;
-  }
-  #enterBtn:hover{transform:scale(1.05);box-shadow:0 0 55px rgba(212,175,110,.55)}
-  #entry .hint{margin-top:1.6rem;font-size:.85rem;color:#7d7462;font-style:italic}
+  main{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:5rem 1.6rem 6rem}
+  .kicker{text-align:center;font-size:.85rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem}
+  h1.title{text-align:center;font-weight:normal;font-size:clamp(2.2rem,6vw,3.4rem);line-height:1.25;margin-bottom:1rem;text-shadow:0 2px 12px rgba(0,0,0,.7)}
+  .subtitle{text-align:center;font-style:italic;color:#a89d86;font-size:1.1rem;line-height:1.8;margin-bottom:3.5rem;max-width:600px;margin-left:auto;margin-right:auto}
 
-  /* ---------- contenu ---------- */
-  #stage{position:relative;z-index:1;opacity:0;transition:opacity 1.5s ease}
-  #stage.visible{opacity:1}
-  main{max-width:700px;margin:0 auto;padding:5rem 1.6rem 8rem}
-  main .kicker{text-align:center;font-size:.85rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem}
-  main h1.title{text-align:center;font-weight:normal;font-size:clamp(2rem,6vw,3rem);line-height:1.25;margin-bottom:1rem}
-  main .intro-lead{text-align:center;font-style:italic;color:#b9ac93;font-size:1.1rem;line-height:1.8;margin-bottom:4rem;max-width:560px;margin-left:auto;margin-right:auto}
-  section{margin-bottom:3.2rem}
-  section h2{font-weight:normal;font-size:1.55rem;color:var(--gold);margin-bottom:1.2rem;line-height:1.4}
-  section h2 .num{color:var(--gold-dim);margin-right:.5rem}
-  p{font-size:1.1rem;line-height:1.9;margin-bottom:1.1rem;color:var(--paper);text-shadow:0 1px 8px rgba(0,0,0,.6)}
-  p.dialogue{font-style:italic;color:#d8cdb6;padding-left:1rem}
-  blockquote.pull{
-    margin:2rem 0;padding:1.2rem 1.4rem;
-    border-left:3px solid var(--gold);
-    background:rgba(212,175,110,.06);
-    font-size:1.2rem;font-style:italic;line-height:1.75;color:#f4ecd9;
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.2rem}
+  .card{
+    display:flex;flex-direction:column;
+    background:rgba(13,12,10,.62);
+    border:1px solid rgba(212,175,110,.22);
+    border-radius:14px;padding:1.6rem 1.4rem;
+    text-decoration:none;color:var(--paper);
+    transition:transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+    backdrop-filter:blur(4px);
   }
-  .conclusion{text-align:center;margin-top:4rem;padding-top:3rem;border-top:1px solid rgba(212,175,110,.2)}
-  .conclusion .sig{margin-top:2rem;font-size:.9rem;color:#7d7462;font-style:italic}
-  footer{text-align:center;padding:2rem;font-size:.8rem;color:#5d5546;font-style:italic}
-
-  /* ---------- lecteur ---------- */
-  #playerWrap{position:fixed;width:2px;height:2px;opacity:0;pointer-events:none;bottom:0;right:0;z-index:0}
-  #nowPlaying{
-    position:fixed;bottom:1.2rem;right:1.2rem;z-index:5;
-    display:flex;align-items:center;gap:.6rem;
-    background:rgba(13,12,10,.75);border:1px solid rgba(212,175,110,.25);
-    border-radius:999px;padding:.5rem .9rem;
-    font-size:.8rem;color:#b9ac93;font-style:italic;
-    backdrop-filter:blur(6px);
+  a.card:hover{transform:translateY(-4px);border-color:var(--gold);box-shadow:0 8px 30px rgba(212,175,110,.18)}
+  .card .emoji{font-size:2.2rem;margin-bottom:.9rem}
+  .card h3{font-weight:normal;font-size:1.25rem;color:var(--paper);margin-bottom:.6rem;line-height:1.4}
+  .card .essence{font-style:italic;color:#a89d86;font-size:.98rem;line-height:1.65;flex-grow:1}
+  .card .enter{margin-top:1.2rem;font-size:.92rem;color:var(--gold);letter-spacing:.02em}
+  .card.soon{opacity:.55;cursor:default}
+  .card .badge{
+    margin-top:1.2rem;align-self:flex-start;
+    font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;
+    color:#8d8471;border:1px solid rgba(212,175,110,.25);
+    border-radius:999px;padding:.3rem .9rem;
   }
-  #nowPlaying .eq{display:inline-flex;gap:2px;align-items:flex-end;height:12px}
-  #nowPlaying .eq span{width:3px;background:var(--gold);animation:eq 1s ease-in-out infinite}
-  #nowPlaying .eq span:nth-child(2){animation-delay:.2s}
-  #nowPlaying .eq span:nth-child(3){animation-delay:.4s}
-  @keyframes eq{0%,100%{height:4px}50%{height:12px}}
-  #nowPlaying.paused .eq span{animation-play-state:paused;height:4px}
-  #muteBtn{background:none;border:none;cursor:pointer;font-size:1rem;line-height:1;padding:.2rem}
-  #nowPlaying a{color:var(--gold);text-decoration:none}
-  #nowPlaying.fallback .eq span{animation-play-state:paused;height:4px}
+  footer{position:relative;z-index:1;text-align:center;padding:0 1.6rem 4rem;font-style:italic;color:#8d8471;font-size:1rem}
 </style>
 </head>
 <body>
@@ -111,161 +73,77 @@
 <div id="bg"></div>
 <div id="scrim"></div>
 
-<!-- Écran d'entrée -->
-<div id="entry">
-  <div>
-    <div class="emoji">🗿</div>
-    <h1>Le Sculpteur</h1>
-    <p class="subtitle">devenir la personne que l'on aspire à être</p>
-    <br>
-    <button id="enterBtn">▶ Entrer dans l'atelier</button>
-    <p class="hint">musique : Sunbyonic — Mirrors go into themselves</p>
+<main>
+  <p class="kicker">Les métaphores de Gabriel</p>
+  <h1 class="title">L'enfant et...</h1>
+  <p class="subtitle">Huit histoires d'un enfant qui grandit —<br>jusqu'à prendre le ciseau lui-même.</p>
+
+  <div class="grid">
+    <a class="card" href="diamant.html">
+      <div class="emoji">💎</div>
+      <h3>L'enfant et le diamant</h3>
+      <p class="essence">« Je suis déjà quelqu'un. »</p>
+      <span class="enter">Ouvrir l'écrin →</span>
+    </a>
+
+    <a class="card" href="juge.html">
+      <div class="emoji">⚖️</div>
+      <h3>L'enfant et le juge</h3>
+      <p class="essence">« Je ne suis pas mes pensées. »</p>
+      <span class="enter">Entrer dans la salle du tribunal →</span>
+    </a>
+
+    <a class="card" href="soleil.html">
+      <div class="emoji">☀️</div>
+      <h3>L'enfant et le soleil</h3>
+      <p class="essence">« Je peux exprimer ce qui est en moi. »</p>
+      <span class="enter">Ouvrir ses mains →</span>
+    </a>
+
+    <a class="card" href="riviere.html">
+      <div class="emoji">🌊</div>
+      <h3>L'enfant et la rivière</h3>
+      <p class="essence">« Je ne contrôle pas tout. »</p>
+      <span class="enter">Se laisser porter →</span>
+    </a>
+
+    <a class="card" href="boussole.html">
+      <div class="emoji">🧭</div>
+      <h3>L'enfant et la boussole</h3>
+      <p class="essence">« Mais je peux choisir ma direction. »</p>
+      <span class="enter">Écouter sa boussole →</span>
+    </a>
+
+    <a class="card" href="clown.html">
+      <div class="emoji">🤡</div>
+      <h3>L'enfant et le clown</h3>
+      <p class="essence">« Et je peux arrêter de prendre toutes mes histoires au pied de la lettre. »</p>
+      <span class="enter">Faire entrer le clown sur scène →</span>
+    </a>
+
+    <a class="card" href="chemin.html">
+      <div class="emoji">🛤️</div>
+      <h3>L'enfant et le chemin</h3>
+      <p class="essence">« L'important c'est d'avancer tranquillement vers ce qui nous fait vibrer. »</p>
+      <span class="enter">Faire un pas →</span>
+    </a>
+
+    <a class="card" href="sculpteur.html">
+      <div class="emoji">🗿</div>
+      <h3>Le sculpteur</h3>
+      <p class="essence">« La personne que j'ai profondément envie d'être. »</p>
+      <span class="enter">Entrer dans l'atelier →</span>
+    </a>
   </div>
-</div>
+</main>
 
-<!-- Contenu -->
-<div id="stage" hidden>
-  <div id="playerWrap"><div id="player"></div></div>
+<footer>enjoy the process.</footer>
 
-  <main>
-    <p class="kicker">Une métaphore</p>
-    <h1 class="title">🗿 Le sculpteur :<br>devenir la personne que l'on aspire à être</h1>
-    <p class="intro-lead">Imagine un sculpteur qui entre dans son atelier pour créer une magnifique statue d'un dieu grec.<br><br>Au début, il n'y a qu'un bloc de pierre.<br><br>Il sait qu'il veut créer quelque chose de beau, mais il ne connaît pas encore tous les détails de ce qu'il veut réaliser. Il doit d'abord observer, apprendre, découvrir ce qui l'inspire. Il regarde d'autres sculptures et se dit :<br><br>« J'aimerais créer quelque chose qui possède cette force, cette élégance, cette sérénité. »<br><br>Petit à petit, sa vision se précise.<br><br>Il commence à travailler la pierre.<br><br>Chaque coup de ciseau enlève un morceau. Parfois, il découvre une forme magnifique. Parfois, il se trompe. Parfois, il doit s'arrêter, prendre du recul et revoir son approche.<br><br>Et surtout, il découvre une chose importante : pour faire apparaître ce qu'il veut créer, il doit aussi accepter de retirer ce qui n'a plus sa place.</p>
-
-    <section>
-      <h2><span class="num">1.</span>Au début, on ne sait pas encore ce qu'on veut devenir</h2>
-      <p>On traverse la vie en essayant de répondre aux attentes des autres, en copiant parfois des modèles qu'on admire, en accumulant des habitudes et des croyances sans même se demander si elles nous correspondent.</p>
-      <p>C'est comme un sculpteur qui frappe la pierre sans avoir pris le temps de réfléchir à ce qu'il souhaite créer.</p>
-      <p>Puis, un jour, il s'arrête.</p>
-      <p>Il observe.</p>
-      <p>Il découvre des qualités qu'il admire : le courage, la générosité, la patience, la force, la douceur. Il rencontre des personnes qui lui donnent envie de devenir meilleur.</p>
-      <p>Sa vision commence à prendre forme.</p>
-      <p>Au début, cette vision peut être floue. On ne sait pas nécessairement ce qu'on veut devenir, ni même ce qui nous rendrait heureux. Mais à force d'observer, d'essayer et de découvrir ce qui nous inspire, on apprend à mieux se connaître.</p>
-      <p>On peut s'inspirer des autres, admirer leurs qualités et vouloir développer les mêmes, sans pour autant chercher à devenir leur copie.</p>
-      <p>On ne peut pas sculpter consciemment sa vie si on ne prend jamais le temps de se demander quelle forme on veut lui donner.</p>
-    </section>
-
-    <section>
-      <h2><span class="num">2.</span>Tout ce qu'on admire ne mérite pas d'être conservé</h2>
-      <p>Le sculpteur peut avoir appris certaines techniques qui ne servent pas son œuvre. Il peut s'être attaché à des morceaux de pierre simplement parce qu'il a passé beaucoup de temps à les travailler.</p>
-      <p>Mais le temps investi ne signifie pas que ces morceaux doivent rester.</p>
-      <p>C'est pareil dans la vie.</p>
-      <p>On peut conserver des habitudes parce qu'elles nous rassurent. Chercher l'approbation de personnes qu'on admire. Continuer quelque chose simplement parce qu'on a peur de décevoir. Garder des comportements qui nous éloignent de nos valeurs parce qu'ils nous sont familiers.</p>
-      <p>Parfois, on sait même que certaines choses ne nous rendent pas heureux, mais on les conserve parce qu'on a appris à vivre avec elles.</p>
-      <p>Et parfois, reconnaître cela fait mal.</p>
-      <p>Il faut accepter de retirer quelque chose auquel on s'était attaché pour faire de la place à quelque chose de plus juste.</p>
-      <blockquote class="pull">Ce n'est pas parce qu'une partie de nous a été utile hier qu'elle doit nécessairement nous accompagner demain.</blockquote>
-      <p>Grandir, ce n'est pas seulement ajouter de nouvelles qualités à notre vie. C'est aussi avoir le courage de remettre en question ce qui nous empêche de devenir la personne que nous souhaitons être.</p>
-    </section>
-
-    <section>
-      <h2><span class="num">3.</span>Le sculpteur ne se frappe pas parce que la pierre n'est pas encore terminée</h2>
-      <p>Imagine maintenant que le sculpteur regarde son œuvre inachevée et se mette en colère.</p>
-      <p class="dialogue">« Pourquoi ne suis-je pas déjà capable de créer ce que j'imagine ? Pourquoi ai-je fait cette erreur ? Pourquoi ne suis-je pas aussi habile que les autres ? »</p>
-      <p>Il pourrait passer ses journées à se reprocher ses imperfections.</p>
-      <p>Mais qu'est-ce que cela changerait à la sculpture ?</p>
-      <p>Il a deux possibilités : continuer à se punir pour les coups de ciseau maladroits qu'il a donnés, ou apprendre à manier son outil avec davantage de précision.</p>
-      <p>La culpabilité peut lui apprendre quelque chose. Elle peut lui montrer qu'il a agi contre ses valeurs, qu'il a blessé quelqu'un ou qu'il doit réparer une erreur.</p>
-      <p>Mais une fois la leçon comprise, se punir indéfiniment ne répare pas l'œuvre.</p>
-      <p>Il peut reconnaître ses erreurs, réparer ce qui peut l'être et apprendre à agir autrement.</p>
-      <p>Il ne peut pas retourner dans le passé pour donner un autre coup de ciseau. Il peut seulement décider de ce qu'il fera du prochain.</p>
-      <p>Nous aussi, nous faisons du mieux que nous pouvons avec les outils, les connaissances et les ressources dont nous disposons à un moment donné. Cela ne signifie pas que toutes nos décisions sont bonnes, ni que nous n'avons jamais de responsabilité envers les autres. Cela signifie que nous pouvons reconnaître nos erreurs sans nous condamner à rester la personne qui les a commises.</p>
-      <blockquote class="pull">Il n'a pas besoin de détester la sculpture qu'il a créée hier pour améliorer celle qu'il crée aujourd'hui.</blockquote>
-      <p>Il garde la leçon, développe ses habiletés et laisse tomber le fouet.</p>
-    </section>
-
-    <section>
-      <h2><span class="num">4.</span>Chaque coup de ciseau est un choix</h2>
-      <p>Le sculpteur ne transforme pas son bloc de pierre en une seule journée.</p>
-      <p>Il travaille un peu chaque jour.</p>
-      <p>Un coup de ciseau pour le courage. Un autre pour la patience. Un autre pour la générosité. Un autre pour apprendre à aimer sans avoir besoin de prouver sa valeur.</p>
-      <p>Et parfois, le travail consiste à renforcer quelque chose plutôt qu'à retirer de la matière : pratiquer, apprendre, essayer, recommencer.</p>
-      <p>La vie fonctionne de la même manière.</p>
-      <p>Tu ne deviens pas courageux en attendant de ne plus avoir peur. Tu le deviens en posant des gestes courageux malgré la peur.</p>
-      <p>Tu ne deviens pas généreux en attendant d'être parfait. Tu le deviens en choisissant de donner, avec discernement.</p>
-      <p>Tu ne deviens pas quelqu'un qui vit pleinement en attendant que toutes tes insécurités disparaissent. Tu le deviens en allant vivre, même si certaines sont encore là.</p>
-      <p>Tu ne deviens pas une personne qui aime en attendant d'être certain de ne jamais souffrir. Tu le deviens en acceptant de t'ouvrir aux autres, tout en apprenant à respecter tes limites.</p>
-      <p>Chaque action est une occasion de donner forme à la personne que tu veux devenir.</p>
-      <p>Tu ne peux pas contrôler tous les événements de ta vie, mais tu peux participer à la personne que tu construis à travers tes réponses à ces événements.</p>
-      <blockquote class="pull">Tu n'as pas besoin de transformer toute ta vie aujourd'hui. Tu as seulement besoin de choisir le prochain coup de ciseau.</blockquote>
-    </section>
-
-    <section>
-      <h2><span class="num">5.</span>Le sculpteur reste ouvert au monde</h2>
-      <p>Imagine que le sculpteur travaille dans son atelier et que des gens viennent observer son œuvre.</p>
-      <p>Certains admirent son travail. D'autres le critiquent. Certains lui donnent des conseils précieux. D'autres ne comprennent tout simplement pas ce qu'il essaie de créer.</p>
-      <p>Le sculpteur ne peut pas empêcher les gens d'avoir leurs propres opinions.</p>
-      <p>Il ne peut pas plaire à tout le monde.</p>
-      <p>Mais il peut écouter, réfléchir et apprendre.</p>
-      <p>Une critique peut lui permettre de voir un défaut qu'il n'avait jamais remarqué. Une rencontre peut lui faire découvrir une technique qui transforme sa façon de travailler. Une personne peut lui présenter une vision de la beauté à laquelle il n'avait jamais pensé.</p>
-      <p>Il serait dommage qu'il refuse tout cela sous prétexte qu'il veut rester fidèle à sa vision.</p>
-      <p>Mais il serait tout aussi dommage qu'il abandonne son œuvre chaque fois que quelqu'un n'est pas d'accord avec lui.</p>
-      <p>Il apprend donc à faire la différence entre ce qui peut l'aider à grandir et ce qui ne correspond simplement pas à ce qu'il veut créer.</p>
-      <p>C'est pareil dans la vie.</p>
-      <p>Certaines personnes vont nous aimer pour qui nous sommes. D'autres vont nous rejeter. Certaines vont nous inspirer et nous aider à devenir meilleurs. D'autres vont nous mettre à l'épreuve, parfois malgré elles, parfois volontairement.</p>
-      <p>Nous ne pouvons pas contrôler leurs réactions, leurs intentions ou leurs opinions. Nous ne pouvons pas non plus éviter toutes les épreuves.</p>
-      <p>Mais nous pouvons rester ouverts à ce que le monde nous apprend, sans lui abandonner le pouvoir de décider de notre valeur ou de notre direction.</p>
-      <p>Être fidèle à soi-même ne signifie pas refuser de changer. Cela signifie choisir consciemment ce que l'on décide de conserver, de transformer ou de laisser derrière soi.</p>
-      <p>Le monde peut influencer notre œuvre, nous faire découvrir de nouvelles possibilités et même transformer notre vision. Mais c'est à nous de décider de la personne que nous voulons devenir.</p>
-      <blockquote class="pull">Nous ne sculptons pas notre vie pour être admirés par les autres. Nous la sculptons parce que nous voulons devenir la personne que nous aspirons à être.</blockquote>
-    </section>
-
-    <section>
-      <h2><span class="num">6.</span>Et si se rapprocher de Dieu, c'était aussi cela ?</h2>
-      <p>Un jour, le sculpteur se demande s'il se rapproche de son idéal.</p>
-      <p>Il regarde sa statue et constate tout le chemin parcouru. Il voit les parties qui ont pris forme, celles qui demandent encore du travail et celles qu'il n'avait même pas imaginées au départ.</p>
-      <p>Il comprend qu'il ne pourra peut-être jamais atteindre une perfection absolue. Mais il peut continuer à cultiver ce qu'il considère comme beau et bon.</p>
-      <p>Tu te demandes peut-être, toi aussi, comment te rapprocher de Dieu.</p>
-      <p>Si tu associes Dieu à l'amour, à la bonté, à la sagesse, au courage et à la compassion, tu peux chercher à incarner ces qualités dans ta vie quotidienne.</p>
-      <p>Devenir plus patient avec les autres. Apprendre à pardonner sans nier ce qui t'a blessé. Faire preuve de courage quand la peur te retient. Donner sans chercher constamment à recevoir quelque chose en retour. Reconnaître tes erreurs et choisir de faire mieux.</p>
-      <p>Pas pour mériter ta valeur.</p>
-      <p>Pas pour devenir digne d'être aimé.</p>
-      <p>Pas pour obtenir une note parfaite à la fin de ta vie.</p>
-      <p>Mais parce que tu veux vivre en accord avec ce qui a du sens pour toi.</p>
-      <p>Tu n'as pas besoin d'attendre d'être une œuvre achevée pour commencer à vivre selon tes valeurs. Tu peux déjà les incarner aujourd'hui, dans les petites décisions comme dans les grandes.</p>
-      <p>Le sculpteur n'attend pas d'avoir terminé sa statue pour être un sculpteur. Il l'est déjà dans chacun de ses gestes, dans son apprentissage, dans sa patience et dans sa volonté de continuer.</p>
-      <p>Et peut-être que se rapprocher de Dieu, pour toi, c'est aussi ce chemin : devenir progressivement une personne qui incarne davantage les vertus qu'elle admire, tout en restant humble et ouverte à ce qu'elle a encore à apprendre.</p>
-    </section>
-
-    <div class="conclusion">
-      <h2 style="color:var(--gold);font-weight:normal;font-size:1.6rem;margin-bottom:1.5rem;">Continue de sculpter</h2>
-      <p>Tu ne choisis pas le bloc de pierre avec lequel tu commences.</p>
-      <p>Tu ne choisis pas tout ce que la vie déposera sur ton chemin.</p>
-      <p>Tu ne peux pas effacer les coups de ciseau du passé, empêcher les autres de te juger ou prévoir exactement ce que tu découvriras demain.</p>
-      <p>Mais tu peux apprendre à mieux manier tes outils.</p>
-      <p>Tu peux choisir les qualités que tu veux cultiver, remettre en question les habitudes qui t'éloignent de tes valeurs et poser chaque jour des gestes qui te rapprochent de la personne que tu souhaites devenir.</p>
-      <p>Parfois, tu feras des erreurs. Parfois, tu devras retirer une partie de ton œuvre que tu croyais pourtant réussie. Parfois, une rencontre ou une épreuve transformera complètement ta vision.</p>
-      <p>Ce n'est pas grave. Tu es en train d'apprendre.</p>
-      <p>Tu n'as pas besoin de te punir pour ce que tu ne savais pas hier. Tu n'as pas besoin de plaire à tout le monde. Tu n'as pas besoin d'être parfait pour commencer à vivre.</p>
-      <blockquote class="pull">Garde les leçons. Laisse tomber le fouet. Reste ouvert au monde. Et continue de sculpter.</blockquote>
-      <p>Parce qu'au bout du compte, la question n'est pas de savoir si tout le monde admirera ton œuvre.</p>
-      <p>La question est de savoir si, jour après jour, tu es en train de devenir la personne que tu as profondément envie d'être.</p>
-      <p>Et tu n'as pas besoin d'attendre demain pour commencer.</p>
-      <p class="sig">— Gabriel, octobre 2026</p>
-    </div>
-  </main>
-
-  <footer>Musique : Sunbyonic — « Mirrors go into themselves » (via YouTube)</footer>
-
-  <div id="nowPlaying" hidden>
-    <span class="eq"><span></span><span></span><span></span></span>
-    <span>Sunbyonic — Mirrors go into themselves</span>
-    <button id="muteBtn" title="Son on/off">🔊</button>
-    <a href="https://www.youtube.com/watch?v=baP3eqYNMZc" target="_blank" rel="noopener" title="Ouvrir sur YouTube">↗</a>
-    <span id="fallbackMsg" hidden style="color:#e0a0a0;">&nbsp;— lecture bloquée ici, <a href="https://www.youtube.com/watch?v=baP3eqYNMZc" target="_blank" rel="noopener" style="color:#e0a0a0;text-decoration:underline;">écoute sur YouTube</a></span>
-  </div>
-</div>
-
-<script src="https://www.youtube.com/iframe_api"></script>
 <script>
-  var player = null, playerReady = false, apiReady = false, pendingPlay = false, muted = false, plainMode = false;
-  var VIDEO_ID = 'baP3eqYNMZc';
-  var IS_FILE = window.location.protocol === 'file:';
-
   // champ d'étoiles scintillantes
   (function(){
     var tints=['255,255,255','255,255,255','200,220,255','255,230,190','255,200,220'];
-    for(var i=0;i<140;i++){
+    for(var i=0;i<120;i++){
       var d=document.createElement('div');
       d.className='star';
       var s=(Math.random()<0.12)?2.5+Math.random()*2:1+Math.random()*1.6;
@@ -280,79 +158,6 @@
       document.body.appendChild(d);
     }
   })();
-
-  function plainIframe(){
-    // repli sans API JS : fonctionne partout, y compris en fichier local (file://)
-    var wrap = document.getElementById('playerWrap');
-    wrap.innerHTML = '<iframe width="2" height="2" src="https://www.youtube.com/embed/'+VIDEO_ID+'?autoplay=1&loop=1&playlist='+VIDEO_ID+'&rel=0" frameborder="0" allow="autoplay; encrypted-media"></iframe>';
-    plainMode = true;
-    var mb = document.getElementById('muteBtn');
-    if(mb) mb.style.display = 'none';
-  }
-
-  function createPlayer(){
-    if(IS_FILE){ plainIframe(); return; } // l'API JS YouTube est capricieuse en file://
-    try{
-      player = new YT.Player('player', {
-        videoId: VIDEO_ID,
-        playerVars:{autoplay:1, loop:1, playlist:VIDEO_ID, rel:0, controls:0, modestbranding:1},
-        events:{ 'onReady': function(e){
-          playerReady = true;
-          try{ e.target.setVolume(70); }catch(_){}
-          e.target.playVideo();
-        },
-        'onError': function(){ showFallback(); } }
-      });
-      // sécurité : si onReady ne se déclenche jamais, basculer en lecteur simple
-      setTimeout(function(){
-        if(!playerReady && !plainMode){
-          try{ if(player && player.destroy) player.destroy(); }catch(_){}
-          plainIframe();
-        }
-      }, 7000);
-    }catch(_){ plainIframe(); }
-  }
-  function onYouTubeIframeAPIReady(){
-    apiReady = true;
-    if(pendingPlay){ pendingPlay=false; createPlayer(); }
-  }
-  // si l'API YouTube ne charge pas du tout : en local on tente le lecteur simple, sinon on propose le lien direct
-  setTimeout(function(){
-    if(pendingPlay && !playerReady && !plainMode){
-      if(IS_FILE){ pendingPlay=false; plainIframe(); }
-      else{ showFallback(); }
-    }
-  }, 8000);
-
-  function showFallback(){
-    var pill=document.getElementById('nowPlaying');
-    if(pill){ pill.classList.add('fallback'); }
-    var msg=document.getElementById('fallbackMsg');
-    if(msg){ msg.hidden=false; }
-  }
-
-  document.getElementById('enterBtn').addEventListener('click', function(){
-    var entry=document.getElementById('entry');
-    var stage=document.getElementById('stage');
-    entry.classList.add('hidden');
-    stage.hidden=false;
-    requestAnimationFrame(function(){ stage.classList.add('visible'); });
-    document.getElementById('nowPlaying').hidden=false;
-    setTimeout(function(){ entry.style.display='none'; },1300);
-    // création AU moment du clic = geste utilisateur : l'autoplay avec son est autorisé
-    if(player){ try{ player.playVideo(); }catch(_){} }
-    else if(IS_FILE){ plainIframe(); }
-    else if(apiReady){ createPlayer(); }
-    else{ pendingPlay=true; }
-  });
-
-  document.getElementById('muteBtn').addEventListener('click', function(){
-    var btn=this, pill=document.getElementById('nowPlaying');
-    if(!playerReady) return;
-    if(muted){ player.unMute(); btn.textContent='🔊'; pill.classList.remove('paused'); }
-    else{ player.mute(); btn.textContent='🔇'; pill.classList.add('paused'); }
-    muted=!muted;
-  });
 </script>
 </body>
 </html>

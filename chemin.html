@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L'enfant et le chemin — l'important c'est d'avancer tranquillement vers ce qui nous fait vibrer</title>
+<style>
+  :root{
+    --ink:#0d0c0a;
+    --paper:#c9c1af;
+    --gold:#d4af6e;
+    --gold-dim:rgba(212,175,110,.35);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:Georgia,'Times New Roman',serif;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  /* ---------- fond d'atelier ---------- */
+  #bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse 50% 35% at 15% 18%, rgba(124,58,190,.38), transparent 70%),
+      radial-gradient(ellipse 45% 40% at 86% 14%, rgba(205,62,142,.30), transparent 70%),
+      radial-gradient(ellipse 55% 45% at 82% 86%, rgba(38,120,185,.32), transparent 70%),
+      radial-gradient(ellipse 48% 38% at 8% 88%, rgba(185,95,45,.24), transparent 70%),
+      radial-gradient(ellipse 42% 32% at 52% 52%, rgba(95,45,170,.28), transparent 70%),
+      radial-gradient(ellipse 120% 100% at 50% 50%, transparent 48%, rgba(0,0,0,.62) 100%),
+      #050509;
+  }
+  #scrim{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(ellipse 62% 74% at 50% 42%, rgba(4,4,8,.60), transparent 72%);
+  }
+  .star{position:fixed;border-radius:50%;z-index:0;pointer-events:none;
+    animation:twinkle ease-in-out infinite;
+  }
+  @keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.95}}
+
+  /* ---------- écran d'entrée ---------- */
+  #entry{
+    position:fixed;inset:0;z-index:10;
+    display:flex;align-items:center;justify-content:center;
+    text-align:center;padding:2rem;
+    background:radial-gradient(ellipse 70% 60% at 50% 40%, rgba(212,175,110,.08), transparent 70%), var(--ink);
+    transition:opacity 1.2s ease;
+  }
+  #entry.hidden{opacity:0;pointer-events:none}
+  #entry .emoji{font-size:4rem;margin-bottom:1rem;filter:drop-shadow(0 0 25px rgba(212,175,110,.35))}
+  #entry h1{font-size:clamp(2.4rem,7vw,4rem);font-weight:normal;letter-spacing:.04em;color:var(--paper)}
+  #entry .subtitle{margin-top:.6rem;font-style:italic;color:#a89d86;font-size:clamp(1rem,3vw,1.25rem)}
+  #enterBtn{
+    margin-top:2.5rem;
+    font-family:Georgia,serif;font-size:1.15rem;letter-spacing:.03em;
+    color:var(--ink);background:linear-gradient(160deg,#e8c987,var(--gold));
+    border:none;border-radius:999px;padding:1rem 2.6rem;cursor:pointer;
+    box-shadow:0 0 35px rgba(212,175,110,.35);
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  #enterBtn:hover{transform:scale(1.05);box-shadow:0 0 55px rgba(212,175,110,.55)}
+  #entry .hint{margin-top:1.6rem;font-size:.85rem;color:#7d7462;font-style:italic}
+
+  /* ---------- contenu ---------- */
+  #stage{position:relative;z-index:1;opacity:0;transition:opacity 1.5s ease}
+  #stage.visible{opacity:1}
+  main{max-width:700px;margin:0 auto;padding:5rem 1.6rem 8rem}
+  main .kicker{text-align:center;font-size:.85rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem}
+  main h1.title{text-align:center;font-weight:normal;font-size:clamp(2rem,6vw,3rem);line-height:1.25;margin-bottom:1rem}
+  main .intro-lead{text-align:center;font-style:italic;color:#a89d86;font-size:1.1rem;line-height:1.8;margin-bottom:4rem;max-width:560px;margin-left:auto;margin-right:auto}
+  section{margin-bottom:3.2rem}
+  section h2{font-weight:normal;font-size:1.55rem;color:var(--gold);margin-bottom:1.2rem;line-height:1.4}
+  section h2 .num{color:var(--gold-dim);margin-right:.5rem}
+  p{font-size:1.1rem;line-height:1.9;margin-bottom:1.1rem;color:var(--paper);text-shadow:0 1px 8px rgba(0,0,0,.6)}
+  p.dialogue{font-style:italic;color:#c2b9a4;padding-left:1rem}
+  blockquote.pull{
+    margin:2rem 0;padding:1.2rem 1.4rem;
+    border-left:3px solid var(--gold);
+    background:rgba(212,175,110,.06);
+    font-size:1.2rem;font-style:italic;line-height:1.75;color:#d8cfba;
+  }
+  .conclusion{text-align:center;margin-top:4rem;padding-top:3rem;border-top:1px solid rgba(212,175,110,.2)}
+  .conclusion .sig{margin-top:2rem;font-size:.9rem;color:#7d7462;font-style:italic}
+  footer{text-align:center;padding:2rem;font-size:.8rem;color:#5d5546;font-style:italic}
+  .backnav{position:relative;z-index:1;max-width:700px;margin:0 auto;padding:1.4rem 1.6rem 0}
+  .backnav a{color:var(--gold);text-decoration:none;font-size:.95rem;font-style:italic;opacity:.85}
+  .backnav a:hover{opacity:1;text-decoration:underline}
+
+  /* ---------- lecteur ---------- */
+  #playerWrap{position:fixed;width:2px;height:2px;opacity:0;pointer-events:none;bottom:0;right:0;z-index:0}
+  #nowPlaying{
+    position:fixed;bottom:1.2rem;right:1.2rem;z-index:5;
+    display:flex;align-items:center;gap:.6rem;
+    background:rgba(13,12,10,.75);border:1px solid rgba(212,175,110,.25);
+    border-radius:999px;padding:.5rem .9rem;
+    font-size:.8rem;color:#a89d86;font-style:italic;
+    backdrop-filter:blur(6px);
+  }
+  #nowPlaying .eq{display:inline-flex;gap:2px;align-items:flex-end;height:12px}
+  #nowPlaying .eq span{width:3px;background:var(--gold);animation:eq 1s ease-in-out infinite}
+  #nowPlaying .eq span:nth-child(2){animation-delay:.2s}
+  #nowPlaying .eq span:nth-child(3){animation-delay:.4s}
+  @keyframes eq{0%,100%{height:4px}50%{height:12px}}
+  #nowPlaying.paused .eq span{animation-play-state:paused;height:4px}
+  #muteBtn{background:none;border:none;cursor:pointer;font-size:1rem;line-height:1;padding:.2rem}
+  #nowPlaying a{color:var(--gold);text-decoration:none}
+  #nowPlaying.fallback .eq span{animation-play-state:paused;height:4px}
+</style>
+</head>
+<body>
+
+<div id="bg"></div>
+<div id="scrim"></div>
+
+<!-- Écran d'entrée -->
+<div id="entry">
+  <div>
+    <div class="emoji">🛤️</div>
+    <h1>L'enfant et le chemin</h1>
+    <p class="subtitle">l'important c'est d'avancer tranquillement vers ce qui nous fait vibrer.</p>
+    <br>
+    <button id="enterBtn">▶ Faire un pas</button>
+    <p class="hint">musique : Fearless Soul — Increase Your Belief</p>
+  </div>
+</div>
+
+<!-- Contenu -->
+<div id="stage" hidden>
+  <div id="playerWrap"><div id="player"></div></div>
+
+  <nav class="backnav"><a href="index.html">← Toutes les métaphores</a></nav>
+
+  <main>
+    <p class="kicker">Une métaphore</p>
+    <h1 class="title">🛤️ L'enfant et le chemin :<br>l'important c'est d'avancer tranquillement vers ce qui nous fait vibrer.</h1>
+    <p class="intro-lead">Il était une fois un enfant qui aimait bouger.<br><br>Il aimait courir, marcher, grimper, sauter.<br><br>Il aimait prendre un chemin simplement pour voir où il allait.<br><br>Chaque détour était une découverte.<br>Chaque colline cachait quelque chose derrière elle.<br>Chaque pas lui permettait d'aller un peu plus loin dans le monde.<br><br>Il n'avait pas besoin de savoir où il arriverait.<br><br><strong>Il aimait avancer parce qu'il aimait découvrir.</strong></p>
+
+    <section>
+      <h2><span class="num">1.</span>La destination</h2>
+      <p>Puis l'enfant grandit.</p>
+      <p>Et peu à peu, il commença à croire que ce qui comptait n'était plus le chemin.</p>
+      <p>C'était la destination.</p>
+      <p>Il se fixa des objectifs.</p>
+      <p>Il voulait atteindre certaines choses, devenir quelqu'un, construire une vie dont il pourrait être fier.</p>
+      <p>Alors il se mit à courir.</p>
+      <p>Il courait vers ses objectifs.</p>
+      <p>Mais certains objectifs prenaient du temps.</p>
+      <p>Certains ne se réalisaient pas.</p>
+      <p>Et parfois, malgré tous ses efforts, il n'obtenait pas ce qu'il espérait.</p>
+      <p>Alors il regardait devant lui et pensait :</p>
+      <p class="dialogue">« Je ne suis toujours pas arrivé. »</p>
+      <p>Il courait encore.</p>
+      <p>Mais à force de regarder la destination, il ne regardait plus le chemin.</p>
+      <p>Il ne remarquait plus les fleurs.</p>
+      <p>Il ne voyait plus les paysages.</p>
+      <p>Il ne prenait plus le temps de découvrir ce qui se trouvait autour de lui.</p>
+      <p>Il voulait tellement arriver qu'il n'avait plus le temps de vivre le voyage.</p>
+      <p>Et plus il attendait ses résultats, moins il se sentait bien.</p>
+    </section>
+
+    <section>
+      <h2><span class="num">2.</span>Immobile</h2>
+      <p>Un jour, il s'arrêta.</p>
+      <p>Il était fatigué de courir.</p>
+      <p>Mais il ne savait plus comment marcher.</p>
+      <p>Il regardait le chemin devant lui.</p>
+      <p>Il pensait à tout ce qu'il n'avait pas encore accompli.</p>
+      <p>À toutes les choses qu'il voulait.</p>
+      <p>À toutes celles qu'il n'avait pas obtenues.</p>
+      <p>Et il attendait.</p>
+      <p>Il attendait que quelque chose change.</p>
+      <p>Il attendait de réussir.</p>
+      <p>Il attendait de se sentir mieux.</p>
+      <p>Il attendait d'avoir une raison de recommencer à avancer.</p>
+      <p>Et sans même s'en rendre compte, l'enfant était devenu immobile.</p>
+    </section>
+
+    <section>
+      <h2><span class="num">3.</span>Un pas</h2>
+      <p>Un matin, il sortit malgré tout.</p>
+      <p>Il ne savait pas quoi faire.</p>
+      <p>Il n'avait pas trouvé de solution.</p>
+      <p>Il n'avait pas atteint ses objectifs.</p>
+      <p>Il n'avait pas retrouvé sa confiance.</p>
+      <p>Mais en regardant le chemin, il remarqua quelque chose qu'il n'avait pas vu depuis longtemps.</p>
+      <p>Une petite fleur poussait juste à côté de ses pieds.</p>
+      <p>Il s'accroupit pour la regarder.</p>
+      <p>Il sourit.</p>
+      <p>Puis il fit un pas.</p>
+      <p>Un seul.</p>
+      <p>Il ne l'avait pas fait pour atteindre un objectif.</p>
+      <p>Il ne l'avait pas fait pour obtenir un résultat.</p>
+      <p>Il l'avait fait parce qu'il avait envie de voir ce qu'il y avait un peu plus loin.</p>
+      <p>Alors il fit un autre pas.</p>
+      <p>Puis un autre.</p>
+      <p>Et quelque chose qu'il croyait avoir perdu recommença doucement à apparaître.</p>
+      <blockquote class="pull">Il aimait avancer.</blockquote>
+    </section>
+
+    <section>
+      <h2><span class="num">4.</span>Les petits mouvements</h2>
+      <p>Il recommença à apprécier les choses simples.</p>
+      <p>Le plaisir de sortir prendre l'air.</p>
+      <p>Le plaisir de marcher quelques minutes.</p>
+      <p>Le plaisir de découvrir un nouvel endroit.</p>
+      <p>Le plaisir d'appeler quelqu'un qu'il aimait.</p>
+      <p>Le plaisir d'essayer quelque chose de nouveau.</p>
+      <p>Même les plus petites choses avaient changé.</p>
+      <p>Parce qu'il ne les voyait plus comme des tâches qu'il devait accomplir.</p>
+      <blockquote class="pull">Il les voyait comme des petits mouvements qui le rapprochaient de la vie qu'il voulait vivre.</blockquote>
+      <p>Un appel pouvait le rapprocher d'une personne importante pour lui.</p>
+      <p>Une promenade pouvait le rapprocher de la vie qu'il voulait mener.</p>
+      <p>Un petit effort pouvait le rapprocher d'une passion qu'il avait envie de retrouver.</p>
+      <p>Un pas pouvait sembler insignifiant.</p>
+      <p>Mais il savait vers quoi il marchait.</p>
+      <p>Et cela changeait tout.</p>
+    </section>
+
+    <div class="conclusion">
+      <h2 style="color:var(--gold);font-weight:normal;font-size:1.6rem;margin-bottom:1.5rem;">Aller quelque part</h2>
+      <p>L'enfant comprit alors quelque chose.</p>
+      <p>Il n'avait pas besoin d'attendre d'avoir obtenu tout ce qu'il désirait pour commencer à vivre.</p>
+      <p>Il pouvait déjà ressentir la joie d'avancer vers ces choses.</p>
+      <p>Il pouvait déjà profiter du chemin.</p>
+      <p>Et parfois, lorsqu'il ne savait plus quoi faire, il n'avait pas besoin de trouver une grande réponse.</p>
+      <p>Il pouvait simplement se demander :</p>
+      <blockquote class="pull">« Quel est le plus petit pas que je peux faire vers quelque chose qui compte pour moi ? »</blockquote>
+      <p>Alors il avançait.</p>
+      <p>Peut-être d'un seul pas.</p>
+      <p>Peut-être de quelques mètres.</p>
+      <p>Parfois davantage.</p>
+      <p>Mais il avançait.</p>
+      <p>Et chaque fois qu'il avançait, il retrouvait cette sensation qu'il avait connue lorsqu'il était enfant.</p>
+      <p>Cette sensation simple et merveilleuse :</p>
+      <blockquote class="pull">aller quelque part.</blockquote>
+      <p>Pas parce qu'il savait exactement où il arriverait.</p>
+      <p>Mais parce que le chemin qu'il avait choisi représentait quelque chose pour lui.</p>
+      <p>Quelque chose qu'il aimait.</p>
+      <p>Quelque chose qu'il voulait découvrir.</p>
+      <p>Quelque chose qui lui donnait envie de continuer.</p>
+      <p>Et il comprit enfin que peut-être, la vie ne valait pas seulement la peine lorsqu'on atteignait ses rêves.</p>
+      <blockquote class="pull">Elle valait la peine pendant qu'on marchait vers eux.</blockquote>
+      <p>Alors l'enfant regarda le chemin devant lui.</p>
+      <p>Il ne savait pas ce qui l'attendait au prochain tournant.</p>
+      <p>Il sourit.</p>
+      <blockquote class="pull">Et il fit un pas.</blockquote>
+      <p class="sig">— Gabriel, octobre 2026</p>
+    </div>
+
+  </main>
+
+  <footer>Musique : Fearless Soul (via YouTube)</footer>
+
+  <div id="nowPlaying" hidden>
+    <span class="eq"><span></span><span></span><span></span></span>
+    <span>Fearless Soul</span>
+    <button id="muteBtn" title="Son on/off">🔊</button>
+    <a href="https://www.youtube.com/watch?v=Mt2TLF0anz0" target="_blank" rel="noopener" title="Ouvrir sur YouTube">↗</a>
+    <span id="fallbackMsg" hidden style="color:#e0a0a0;">&nbsp;— lecture bloquée ici, <a href="https://www.youtube.com/watch?v=Mt2TLF0anz0" target="_blank" rel="noopener" style="color:#e0a0a0;text-decoration:underline;">écoute sur YouTube</a></span>
+  </div>
+</div>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+  var player = null, playerReady = false, apiReady = false, pendingPlay = false, muted = false, plainMode = false;
+  var VIDEO_ID = 'Mt2TLF0anz0';
+  var IS_FILE = window.location.protocol === 'file:';
+
+  // champ d'étoiles scintillantes
+  (function(){
+    var tints=['255,255,255','255,255,255','200,220,255','255,230,190','255,200,220'];
+    for(var i=0;i<140;i++){
+      var d=document.createElement('div');
+      d.className='star';
+      var s=(Math.random()<0.12)?2.5+Math.random()*2:1+Math.random()*1.6;
+      d.style.width=d.style.height=s+'px';
+      var c=tints[Math.floor(Math.random()*tints.length)];
+      d.style.background='rgb('+c+')';
+      d.style.boxShadow='0 0 '+(s*2)+'px rgba('+c+',.8)';
+      d.style.left=(Math.random()*100)+'vw';
+      d.style.top=(Math.random()*100)+'vh';
+      d.style.animationDuration=(2+Math.random()*4)+'s';
+      d.style.animationDelay=(Math.random()*5)+'s';
+      document.body.appendChild(d);
+    }
+  })();
+
+  function plainIframe(){
+    // repli sans API JS : fonctionne partout, y compris en fichier local (file://)
+    var wrap = document.getElementById('playerWrap');
+    wrap.innerHTML = '<iframe width="2" height="2" src="https://www.youtube.com/embed/'+VIDEO_ID+'?autoplay=1&loop=1&playlist='+VIDEO_ID+'&rel=0" frameborder="0" allow="autoplay; encrypted-media"></iframe>';
+    plainMode = true;
+    var mb = document.getElementById('muteBtn');
+    if(mb) mb.style.display = 'none';
+  }
+
+  function createPlayer(){
+    if(IS_FILE){ plainIframe(); return; } // l'API JS YouTube est capricieuse en file://
+    try{
+      player = new YT.Player('player', {
+        videoId: VIDEO_ID,
+        playerVars:{autoplay:1, loop:1, playlist:VIDEO_ID, rel:0, controls:0, modestbranding:1},
+        events:{ 'onReady': function(e){
+          playerReady = true;
+          try{ e.target.setVolume(70); }catch(_){}
+          e.target.playVideo();
+        },
+        'onError': function(){ showFallback(); } }
+      });
+      // sécurité : si onReady ne se déclenche jamais, basculer en lecteur simple
+      setTimeout(function(){
+        if(!playerReady && !plainMode){
+          try{ if(player && player.destroy) player.destroy(); }catch(_){}
+          plainIframe();
+        }
+      }, 7000);
+    }catch(_){ plainIframe(); }
+  }
+  function onYouTubeIframeAPIReady(){
+    apiReady = true;
+    if(pendingPlay){ pendingPlay=false; createPlayer(); }
+  }
+  // si l'API YouTube ne charge pas du tout : en local on tente le lecteur simple, sinon on propose le lien direct
+  setTimeout(function(){
+    if(pendingPlay && !playerReady && !plainMode){
+      if(IS_FILE){ pendingPlay=false; plainIframe(); }
+      else{ showFallback(); }
+    }
+  }, 8000);
+
+  function showFallback(){
+    var pill=document.getElementById('nowPlaying');
+    if(pill){ pill.classList.add('fallback'); }
+    var msg=document.getElementById('fallbackMsg');
+    if(msg){ msg.hidden=false; }
+  }
+
+  document.getElementById('enterBtn').addEventListener('click', function(){
+    var entry=document.getElementById('entry');
+    var stage=document.getElementById('stage');
+    entry.classList.add('hidden');
+    stage.hidden=false;
+    requestAnimationFrame(function(){ stage.classList.add('visible'); });
+    document.getElementById('nowPlaying').hidden=false;
+    setTimeout(function(){ entry.style.display='none'; },1300);
+    // création AU moment du clic = geste utilisateur : l'autoplay avec son est autorisé
+    if(player){ try{ player.playVideo(); }catch(_){} }
+    else if(IS_FILE){ plainIframe(); }
+    else if(apiReady){ createPlayer(); }
+    else{ pendingPlay=true; }
+  });
+
+  document.getElementById('muteBtn').addEventListener('click', function(){
+    var btn=this, pill=document.getElementById('nowPlaying');
+    if(!playerReady) return;
+    if(muted){ player.unMute(); btn.textContent='🔊'; pill.classList.remove('paused'); }
+    else{ player.mute(); btn.textContent='🔇'; pill.classList.add('paused'); }
+    muted=!muted;
+  });
+</script>
+</body>
+</html>

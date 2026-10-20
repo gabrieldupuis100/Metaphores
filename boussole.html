@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L'enfant et la boussole — je peux choisir ma direction</title>
+<style>
+  :root{
+    --ink:#0d0c0a;
+    --paper:#c9c1af;
+    --gold:#d4af6e;
+    --gold-dim:rgba(212,175,110,.35);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:Georgia,'Times New Roman',serif;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  /* ---------- fond d'atelier ---------- */
+  #bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse 50% 35% at 15% 18%, rgba(124,58,190,.38), transparent 70%),
+      radial-gradient(ellipse 45% 40% at 86% 14%, rgba(205,62,142,.30), transparent 70%),
+      radial-gradient(ellipse 55% 45% at 82% 86%, rgba(38,120,185,.32), transparent 70%),
+      radial-gradient(ellipse 48% 38% at 8% 88%, rgba(185,95,45,.24), transparent 70%),
+      radial-gradient(ellipse 42% 32% at 52% 52%, rgba(95,45,170,.28), transparent 70%),
+      radial-gradient(ellipse 120% 100% at 50% 50%, transparent 48%, rgba(0,0,0,.62) 100%),
+      #050509;
+  }
+  #scrim{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(ellipse 62% 74% at 50% 42%, rgba(4,4,8,.60), transparent 72%);
+  }
+  .star{position:fixed;border-radius:50%;z-index:0;pointer-events:none;
+    animation:twinkle ease-in-out infinite;
+  }
+  @keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.95}}
+
+  /* ---------- écran d'entrée ---------- */
+  #entry{
+    position:fixed;inset:0;z-index:10;
+    display:flex;align-items:center;justify-content:center;
+    text-align:center;padding:2rem;
+    background:radial-gradient(ellipse 70% 60% at 50% 40%, rgba(212,175,110,.08), transparent 70%), var(--ink);
+    transition:opacity 1.2s ease;
+  }
+  #entry.hidden{opacity:0;pointer-events:none}
+  #entry .emoji{font-size:4rem;margin-bottom:1rem;filter:drop-shadow(0 0 25px rgba(212,175,110,.35))}
+  #entry h1{font-size:clamp(2.4rem,7vw,4rem);font-weight:normal;letter-spacing:.04em;color:var(--paper)}
+  #entry .subtitle{margin-top:.6rem;font-style:italic;color:#a89d86;font-size:clamp(1rem,3vw,1.25rem)}
+  #enterBtn{
+    margin-top:2.5rem;
+    font-family:Georgia,serif;font-size:1.15rem;letter-spacing:.03em;
+    color:var(--ink);background:linear-gradient(160deg,#e8c987,var(--gold));
+    border:none;border-radius:999px;padding:1rem 2.6rem;cursor:pointer;
+    box-shadow:0 0 35px rgba(212,175,110,.35);
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  #enterBtn:hover{transform:scale(1.05);box-shadow:0 0 55px rgba(212,175,110,.55)}
+  #entry .hint{margin-top:1.6rem;font-size:.85rem;color:#7d7462;font-style:italic}
+
+  /* ---------- contenu ---------- */
+  #stage{position:relative;z-index:1;opacity:0;transition:opacity 1.5s ease}
+  #stage.visible{opacity:1}
+  main{max-width:700px;margin:0 auto;padding:5rem 1.6rem 8rem}
+  main .kicker{text-align:center;font-size:.85rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem}
+  main h1.title{text-align:center;font-weight:normal;font-size:clamp(2rem,6vw,3rem);line-height:1.25;margin-bottom:1rem}
+  main .intro-lead{text-align:center;font-style:italic;color:#a89d86;font-size:1.1rem;line-height:1.8;margin-bottom:4rem;max-width:560px;margin-left:auto;margin-right:auto}
+  section{margin-bottom:3.2rem}
+  section h2{font-weight:normal;font-size:1.55rem;color:var(--gold);margin-bottom:1.2rem;line-height:1.4}
+  section h2 .num{color:var(--gold-dim);margin-right:.5rem}
+  p{font-size:1.1rem;line-height:1.9;margin-bottom:1.1rem;color:var(--paper);text-shadow:0 1px 8px rgba(0,0,0,.6)}
+  p.dialogue{font-style:italic;color:#c2b9a4;padding-left:1rem}
+  blockquote.pull{
+    margin:2rem 0;padding:1.2rem 1.4rem;
+    border-left:3px solid var(--gold);
+    background:rgba(212,175,110,.06);
+    font-size:1.2rem;font-style:italic;line-height:1.75;color:#d8cfba;
+  }
+  .conclusion{text-align:center;margin-top:4rem;padding-top:3rem;border-top:1px solid rgba(212,175,110,.2)}
+  .conclusion .sig{margin-top:2rem;font-size:.9rem;color:#7d7462;font-style:italic}
+  footer{text-align:center;padding:2rem;font-size:.8rem;color:#5d5546;font-style:italic}
+  .backnav{position:relative;z-index:1;max-width:700px;margin:0 auto;padding:1.4rem 1.6rem 0}
+  .backnav a{color:var(--gold);text-decoration:none;font-size:.95rem;font-style:italic;opacity:.85}
+  .backnav a:hover{opacity:1;text-decoration:underline}
+
+  /* ---------- lecteur ---------- */
+  #playerWrap{position:fixed;width:2px;height:2px;opacity:0;pointer-events:none;bottom:0;right:0;z-index:0}
+  #nowPlaying{
+    position:fixed;bottom:1.2rem;right:1.2rem;z-index:5;
+    display:flex;align-items:center;gap:.6rem;
+    background:rgba(13,12,10,.75);border:1px solid rgba(212,175,110,.25);
+    border-radius:999px;padding:.5rem .9rem;
+    font-size:.8rem;color:#a89d86;font-style:italic;
+    backdrop-filter:blur(6px);
+  }
+  #nowPlaying .eq{display:inline-flex;gap:2px;align-items:flex-end;height:12px}
+  #nowPlaying .eq span{width:3px;background:var(--gold);animation:eq 1s ease-in-out infinite}
+  #nowPlaying .eq span:nth-child(2){animation-delay:.2s}
+  #nowPlaying .eq span:nth-child(3){animation-delay:.4s}
+  @keyframes eq{0%,100%{height:4px}50%{height:12px}}
+  #nowPlaying.paused .eq span{animation-play-state:paused;height:4px}
+  #muteBtn{background:none;border:none;cursor:pointer;font-size:1rem;line-height:1;padding:.2rem}
+  #nowPlaying a{color:var(--gold);text-decoration:none}
+  #nowPlaying.fallback .eq span{animation-play-state:paused;height:4px}
+</style>
+</head>
+<body>
+
+<div id="bg"></div>
+<div id="scrim"></div>
+
+<!-- Écran d'entrée -->
+<div id="entry">
+  <div>
+    <div class="emoji">🧭</div>
+    <h1>L'enfant et la boussole</h1>
+    <p class="subtitle">je peux choisir ma direction.</p>
+    <br>
+    <button id="enterBtn">▶ Écouter sa boussole</button>
+    <p class="hint">musique : Good Vibes Tribe 11:11 — I am Guided</p>
+  </div>
+</div>
+
+<!-- Contenu -->
+<div id="stage" hidden>
+  <div id="playerWrap"><div id="player"></div></div>
+
+  <nav class="backnav"><a href="index.html">← Toutes les métaphores</a></nav>
+
+  <main>
+    <p class="kicker">Une métaphore</p>
+    <h1 class="title">🧭 L'enfant et la boussole :<br>je peux choisir ma direction.</h1>
+    <p class="intro-lead">Il était une fois un enfant qui marchait sur un long chemin.<br><br>Il avançait depuis longtemps.<br><br>Chaque jour, il rencontrait les mêmes difficultés.<br><br>Parfois il pleuvait.<br>Parfois le chemin était difficile.<br>Parfois il était fatigué.<br>Parfois il se sentait seul.<br><br>Et chaque fois, il continuait simplement à avancer.<br><br>Il pensait :<br>« C'est comme ça. »</p>
+
+    <section>
+      <h2><span class="num">1.</span>Le même endroit</h2>
+      <p>Puis un jour, il remarqua quelque chose.</p>
+      <p>Il était arrivé exactement au même endroit qu'il avait déjà traversé plusieurs fois.</p>
+      <p>Il regarda autour de lui.</p>
+      <p>Il reconnut la colline.</p>
+      <p>La forêt.</p>
+      <p>La rivière.</p>
+      <p>Le même vieux chemin.</p>
+      <p>Il resta silencieux.</p>
+      <p class="dialogue">« Pourquoi est-ce que je reviens toujours ici ? »</p>
+      <p>Pour la première fois, il regarda vraiment autour de lui.</p>
+      <p>Et il vit quelque chose qu'il n'avait jamais remarqué.</p>
+      <p><strong>Il y avait plusieurs chemins.</strong></p>
+      <p>Un chemin continuait tout droit.</p>
+      <p>Un autre montait vers la montagne.</p>
+      <p>Un troisième descendait vers la rivière.</p>
+      <p>Et un autre semblait disparaître dans la forêt.</p>
+      <p>L'enfant resta immobile.</p>
+      <p class="dialogue">« J'ai le choix ? »</p>
+      <p>Il avait toujours cru que parce qu'une situation était réelle, il devait simplement la subir.</p>
+      <p>Mais maintenant, une question différente apparut :</p>
+      <blockquote class="pull">« Où est-ce que j'ai envie d'aller ? »</blockquote>
+    </section>
+
+    <section>
+      <h2><span class="num">2.</span>La boussole était déjà là</h2>
+      <p>L'enfant chercha alors quelque chose pour l'aider.</p>
+      <p>Il regarda autour de lui.</p>
+      <p>Il chercha un panneau.</p>
+      <p>Une carte.</p>
+      <p>Quelqu'un qui pourrait lui dire quel chemin prendre.</p>
+      <p>Mais il ne trouva rien.</p>
+      <p>Alors il ferma les yeux.</p>
+      <p>Il respira.</p>
+      <p>Et dans le silence, il sentit quelque chose.</p>
+      <p>Une légère attraction.</p>
+      <p>Presque imperceptible.</p>
+      <p>Comme une direction qui apparaissait quelque part au fond de lui.</p>
+      <p>Il posa une main sur son cœur.</p>
+      <p>Et il comprit :</p>
+      <blockquote class="pull">la boussole avait toujours été là.</blockquote>
+      <p>Elle ne criait pas.</p>
+      <p>Elle ne donnait pas d'ordre.</p>
+      <p>Elle ne lui promettait pas que le chemin serait facile.</p>
+      <p>Elle indiquait simplement une direction.</p>
+    </section>
+
+    <section>
+      <h2><span class="num">3.</span>Pas de garantie</h2>
+      <p>Au début, l'enfant doutait.</p>
+      <p class="dialogue">« Et si je me trompe ? »</p>
+      <p>La boussole ne répondit pas.</p>
+      <p class="dialogue">« Et si ce chemin est difficile ? »</p>
+      <p>Elle ne répondit toujours pas.</p>
+      <p class="dialogue">« Et si je n'arrive jamais là où je veux aller ? »</p>
+      <p>Toujours rien.</p>
+      <p>Alors l'enfant comprit quelque chose.</p>
+      <blockquote class="pull">La boussole n'était pas là pour lui garantir le résultat.</blockquote>
+      <p>Elle était là pour lui permettre de choisir son prochain pas.</p>
+      <p>Il inspira.</p>
+      <p>Il regarda la direction qui lui semblait juste.</p>
+      <p>Et il marcha.</p>
+    </section>
+
+    <section>
+      <h2><span class="num">4.</span>Il naviguait</h2>
+      <p>Parfois, il se trompait.</p>
+      <p>Alors il s'arrêtait.</p>
+      <p>Il respirait.</p>
+      <p>Il regardait à nouveau.</p>
+      <p>Et il changeait de direction.</p>
+      <p>Parfois, il rencontrait une montagne.</p>
+      <p>Parfois, une rivière lui barrait le chemin.</p>
+      <p>Parfois, il découvrait que le chemin qu'il avait choisi ne lui convenait finalement pas.</p>
+      <p>Mais il ne considérait plus cela comme un échec.</p>
+      <blockquote class="pull">Il naviguait.</blockquote>
+      <p>Et plus il apprenait à écouter sa boussole rapidement, moins il restait longtemps sur un chemin qui ne lui convenait pas.</p>
+    </section>
+
+    <section>
+      <h2><span class="num">5.</span>Présence</h2>
+      <p>Un jour, il comprit quelque chose de très important.</p>
+      <p>Il n'avait jamais eu besoin de savoir exactement où il arriverait.</p>
+      <p>Il n'avait pas besoin de connaître toute la route.</p>
+      <p>Il n'avait même pas besoin de savoir si son choix serait parfait.</p>
+      <p>Il avait seulement besoin d'être présent.</p>
+      <p>De ressentir.</p>
+      <p>D'écouter.</p>
+      <p>Puis d'agir.</p>
+      <blockquote class="pull">La sensation était le signal.<br>La présence était l'espace pour l'entendre.<br>L'action était la manière de suivre la direction.</blockquote>
+      <p>Et il continua son chemin.</p>
+      <p>La pluie continuait de tomber.</p>
+      <p>Les montagnes continuaient d'exister.</p>
+      <p>Les autres voyageurs prenaient parfois des chemins différents.</p>
+      <p>Certains lui disaient :</p>
+      <p class="dialogue">« Tu devrais aller par là. »</p>
+      <p>D'autres :</p>
+      <p class="dialogue">« Pourquoi prends-tu ce chemin ? »</p>
+      <p>L'enfant les écoutait.</p>
+      <p>Il pouvait apprendre d'eux.</p>
+      <p>Il pouvait changer d'avis.</p>
+      <p>Mais il ne leur donnait plus sa boussole.</p>
+      <blockquote class="pull">Elle lui appartenait.</blockquote>
+    </section>
+
+    <div class="conclusion">
+      <h2 style="color:var(--gold);font-weight:normal;font-size:1.6rem;margin-bottom:1.5rem;">Il était guidé</h2>
+      <p>Et avec le temps, quelque chose changea.</p>
+      <p>Avant, lorsqu'une situation lui déplaisait, il pouvait rester longtemps à la subir.</p>
+      <p>Maintenant, il remarquait beaucoup plus rapidement :</p>
+      <p class="dialogue">« Ce chemin ne me convient plus. »</p>
+      <p>Et il regardait sa boussole.</p>
+      <p>Il pouvait choisir de rester.</p>
+      <p>Choisir de partir.</p>
+      <p>Changer son environnement.</p>
+      <p>Changer son attention.</p>
+      <p>Se reposer.</p>
+      <p>Parler à quelqu'un.</p>
+      <p>Essayer quelque chose de nouveau.</p>
+      <p>Ou simplement continuer à marcher.</p>
+      <p>Il n'avait pas toujours besoin de changer la situation.</p>
+      <blockquote class="pull">Il avait seulement besoin de se rappeler qu'il pouvait choisir sa réponse.</blockquote>
+      <p>Et un jour, l'enfant se retourna.</p>
+      <p>Il regarda tout le chemin qu'il avait parcouru.</p>
+      <p>Il comprit qu'il avait passé une grande partie de sa vie à demander :</p>
+      <p class="dialogue">« Qu'est-ce qui va m'arriver ? »</p>
+      <p>Alors qu'une question beaucoup plus importante était toujours disponible :</p>
+      <blockquote class="pull">« Où est-ce que je choisis d'aller maintenant ? »</blockquote>
+      <p>Il sourit.</p>
+      <p>Il posa une main sur son cœur.</p>
+      <p>Respira.</p>
+      <p>Écouta le silence.</p>
+      <p>Puis il sentit à nouveau cette petite direction intérieure.</p>
+      <p>Et il fit un pas.</p>
+      <p><strong>Il était guidé.</strong></p>
+      <p>Pas parce qu'il connaissait l'avenir.</p>
+      <p>Pas parce qu'il contrôlait la route.</p>
+      <p>Mais parce qu'il avait appris à écouter sa propre boussole.</p>
+      <p>Et il comprit enfin :</p>
+      <blockquote class="pull">Je n'ai pas besoin de connaître le chemin pour faire le prochain pas.<br><br>Je peux faire confiance à ma direction intérieure, agir, observer ce qui arrive, puis me laisser guider à nouveau.<br><br>Je ne subis plus le voyage.<br><br>Je navigue. 🧭</blockquote>
+      <p class="sig">— Gabriel, octobre 2026</p>
+    </div>
+
+  </main>
+
+  <footer>Musique : Good Vibes Tribe 11:11 — « I am Guided » (via YouTube)</footer>
+
+  <div id="nowPlaying" hidden>
+    <span class="eq"><span></span><span></span><span></span></span>
+    <span>Good Vibes Tribe 11:11 — I am Guided</span>
+    <button id="muteBtn" title="Son on/off">🔊</button>
+    <a href="https://www.youtube.com/watch?v=JJ9E_mtY82E" target="_blank" rel="noopener" title="Ouvrir sur YouTube">↗</a>
+    <span id="fallbackMsg" hidden style="color:#e0a0a0;">&nbsp;— lecture bloquée ici, <a href="https://www.youtube.com/watch?v=JJ9E_mtY82E" target="_blank" rel="noopener" style="color:#e0a0a0;text-decoration:underline;">écoute sur YouTube</a></span>
+  </div>
+</div>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+  var player = null, playerReady = false, apiReady = false, pendingPlay = false, muted = false, plainMode = false;
+  var VIDEO_ID = 'JJ9E_mtY82E';
+  var IS_FILE = window.location.protocol === 'file:';
+
+  // champ d'étoiles scintillantes
+  (function(){
+    var tints=['255,255,255','255,255,255','200,220,255','255,230,190','255,200,220'];
+    for(var i=0;i<140;i++){
+      var d=document.createElement('div');
+      d.className='star';
+      var s=(Math.random()<0.12)?2.5+Math.random()*2:1+Math.random()*1.6;
+      d.style.width=d.style.height=s+'px';
+      var c=tints[Math.floor(Math.random()*tints.length)];
+      d.style.background='rgb('+c+')';
+      d.style.boxShadow='0 0 '+(s*2)+'px rgba('+c+',.8)';
+      d.style.left=(Math.random()*100)+'vw';
+      d.style.top=(Math.random()*100)+'vh';
+      d.style.animationDuration=(2+Math.random()*4)+'s';
+      d.style.animationDelay=(Math.random()*5)+'s';
+      document.body.appendChild(d);
+    }
+  })();
+
+  function plainIframe(){
+    // repli sans API JS : fonctionne partout, y compris en fichier local (file://)
+    var wrap = document.getElementById('playerWrap');
+    wrap.innerHTML = '<iframe width="2" height="2" src="https://www.youtube.com/embed/'+VIDEO_ID+'?autoplay=1&loop=1&playlist='+VIDEO_ID+'&rel=0" frameborder="0" allow="autoplay; encrypted-media"></iframe>';
+    plainMode = true;
+    var mb = document.getElementById('muteBtn');
+    if(mb) mb.style.display = 'none';
+  }
+
+  function createPlayer(){
+    if(IS_FILE){ plainIframe(); return; } // l'API JS YouTube est capricieuse en file://
+    try{
+      player = new YT.Player('player', {
+        videoId: VIDEO_ID,
+        playerVars:{autoplay:1, loop:1, playlist:VIDEO_ID, rel:0, controls:0, modestbranding:1},
+        events:{ 'onReady': function(e){
+          playerReady = true;
+          try{ e.target.setVolume(70); }catch(_){}
+          e.target.playVideo();
+        },
+        'onError': function(){ showFallback(); } }
+      });
+      // sécurité : si onReady ne se déclenche jamais, basculer en lecteur simple
+      setTimeout(function(){
+        if(!playerReady && !plainMode){
+          try{ if(player && player.destroy) player.destroy(); }catch(_){}
+          plainIframe();
+        }
+      }, 7000);
+    }catch(_){ plainIframe(); }
+  }
+  function onYouTubeIframeAPIReady(){
+    apiReady = true;
+    if(pendingPlay){ pendingPlay=false; createPlayer(); }
+  }
+  // si l'API YouTube ne charge pas du tout : en local on tente le lecteur simple, sinon on propose le lien direct
+  setTimeout(function(){
+    if(pendingPlay && !playerReady && !plainMode){
+      if(IS_FILE){ pendingPlay=false; plainIframe(); }
+      else{ showFallback(); }
+    }
+  }, 8000);
+
+  function showFallback(){
+    var pill=document.getElementById('nowPlaying');
+    if(pill){ pill.classList.add('fallback'); }
+    var msg=document.getElementById('fallbackMsg');
+    if(msg){ msg.hidden=false; }
+  }
+
+  document.getElementById('enterBtn').addEventListener('click', function(){
+    var entry=document.getElementById('entry');
+    var stage=document.getElementById('stage');
+    entry.classList.add('hidden');
+    stage.hidden=false;
+    requestAnimationFrame(function(){ stage.classList.add('visible'); });
+    document.getElementById('nowPlaying').hidden=false;
+    setTimeout(function(){ entry.style.display='none'; },1300);
+    // création AU moment du clic = geste utilisateur : l'autoplay avec son est autorisé
+    if(player){ try{ player.playVideo(); }catch(_){} }
+    else if(IS_FILE){ plainIframe(); }
+    else if(apiReady){ createPlayer(); }
+    else{ pendingPlay=true; }
+  });
+
+  document.getElementById('muteBtn').addEventListener('click', function(){
+    var btn=this, pill=document.getElementById('nowPlaying');
+    if(!playerReady) return;
+    if(muted){ player.unMute(); btn.textContent='🔊'; pill.classList.remove('paused'); }
+    else{ player.mute(); btn.textContent='🔇'; pill.classList.add('paused'); }
+    muted=!muted;
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L'enfant et la rivière — je ne contrôle pas tout</title>
+<style>
+  :root{
+    --ink:#0d0c0a;
+    --paper:#c9c1af;
+    --gold:#d4af6e;
+    --gold-dim:rgba(212,175,110,.35);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:Georgia,'Times New Roman',serif;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  /* ---------- fond d'atelier ---------- */
+  #bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse 50% 35% at 15% 18%, rgba(124,58,190,.38), transparent 70%),
+      radial-gradient(ellipse 45% 40% at 86% 14%, rgba(205,62,142,.30), transparent 70%),
+      radial-gradient(ellipse 55% 45% at 82% 86%, rgba(38,120,185,.32), transparent 70%),
+      radial-gradient(ellipse 48% 38% at 8% 88%, rgba(185,95,45,.24), transparent 70%),
+      radial-gradient(ellipse 42% 32% at 52% 52%, rgba(95,45,170,.28), transparent 70%),
+      radial-gradient(ellipse 120% 100% at 50% 50%, transparent 48%, rgba(0,0,0,.62) 100%),
+      #050509;
+  }
+  #scrim{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(ellipse 62% 74% at 50% 42%, rgba(4,4,8,.60), transparent 72%);
+  }
+  .star{position:fixed;border-radius:50%;z-index:0;pointer-events:none;
+    animation:twinkle ease-in-out infinite;
+  }
+  @keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.95}}
+
+  /* ---------- écran d'entrée ---------- */
+  #entry{
+    position:fixed;inset:0;z-index:10;
+    display:flex;align-items:center;justify-content:center;
+    text-align:center;padding:2rem;
+    background:radial-gradient(ellipse 70% 60% at 50% 40%, rgba(212,175,110,.08), transparent 70%), var(--ink);
+    transition:opacity 1.2s ease;
+  }
+  #entry.hidden{opacity:0;pointer-events:none}
+  #entry .emoji{font-size:4rem;margin-bottom:1rem;filter:drop-shadow(0 0 25px rgba(212,175,110,.35))}
+  #entry h1{font-size:clamp(2.4rem,7vw,4rem);font-weight:normal;letter-spacing:.04em;color:var(--paper)}
+  #entry .subtitle{margin-top:.6rem;font-style:italic;color:#a89d86;font-size:clamp(1rem,3vw,1.25rem)}
+  #enterBtn{
+    margin-top:2.5rem;
+    font-family:Georgia,serif;font-size:1.15rem;letter-spacing:.03em;
+    color:var(--ink);background:linear-gradient(160deg,#e8c987,var(--gold));
+    border:none;border-radius:999px;padding:1rem 2.6rem;cursor:pointer;
+    box-shadow:0 0 35px rgba(212,175,110,.35);
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  #enterBtn:hover{transform:scale(1.05);box-shadow:0 0 55px rgba(212,175,110,.55)}
+  #entry .hint{margin-top:1.6rem;font-size:.85rem;color:#7d7462;font-style:italic}
+
+  /* ---------- contenu ---------- */
+  #stage{position:relative;z-index:1;opacity:0;transition:opacity 1.5s ease}
+  #stage.visible{opacity:1}
+  main{max-width:700px;margin:0 auto;padding:5rem 1.6rem 8rem}
+  main .kicker{text-align:center;font-size:.85rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem}
+  main h1.title{text-align:center;font-weight:normal;font-size:clamp(2rem,6vw,3rem);line-height:1.25;margin-bottom:1rem}
+  main .intro-lead{text-align:center;font-style:italic;color:#a89d86;font-size:1.1rem;line-height:1.8;margin-bottom:4rem;max-width:560px;margin-left:auto;margin-right:auto}
+  section{margin-bottom:3.2rem}
+  section h2{font-weight:normal;font-size:1.55rem;color:var(--gold);margin-bottom:1.2rem;line-height:1.4}
+  section h2 .num{color:var(--gold-dim);margin-right:.5rem}
+  p{font-size:1.1rem;line-height:1.9;margin-bottom:1.1rem;color:var(--paper);text-shadow:0 1px 8px rgba(0,0,0,.6)}
+  p.dialogue{font-style:italic;color:#c2b9a4;padding-left:1rem}
+  blockquote.pull{
+    margin:2rem 0;padding:1.2rem 1.4rem;
+    border-left:3px solid var(--gold);
+    background:rgba(212,175,110,.06);
+    font-size:1.2rem;font-style:italic;line-height:1.75;color:#d8cfba;
+  }
+  .conclusion{text-align:center;margin-top:4rem;padding-top:3rem;border-top:1px solid rgba(212,175,110,.2)}
+  .conclusion .sig{margin-top:2rem;font-size:.9rem;color:#7d7462;font-style:italic}
+  footer{text-align:center;padding:2rem;font-size:.8rem;color:#5d5546;font-style:italic}
+  .backnav{position:relative;z-index:1;max-width:700px;margin:0 auto;padding:1.4rem 1.6rem 0}
+  .backnav a{color:var(--gold);text-decoration:none;font-size:.95rem;font-style:italic;opacity:.85}
+  .backnav a:hover{opacity:1;text-decoration:underline}
+
+  /* ---------- lecteur ---------- */
+  #playerWrap{position:fixed;width:2px;height:2px;opacity:0;pointer-events:none;bottom:0;right:0;z-index:0}
+  #nowPlaying{
+    position:fixed;bottom:1.2rem;right:1.2rem;z-index:5;
+    display:flex;align-items:center;gap:.6rem;
+    background:rgba(13,12,10,.75);border:1px solid rgba(212,175,110,.25);
+    border-radius:999px;padding:.5rem .9rem;
+    font-size:.8rem;color:#a89d86;font-style:italic;
+    backdrop-filter:blur(6px);
+  }
+  #nowPlaying .eq{display:inline-flex;gap:2px;align-items:flex-end;height:12px}
+  #nowPlaying .eq span{width:3px;background:var(--gold);animation:eq 1s ease-in-out infinite}
+  #nowPlaying .eq span:nth-child(2){animation-delay:.2s}
+  #nowPlaying .eq span:nth-child(3){animation-delay:.4s}
+  @keyframes eq{0%,100%{height:4px}50%{height:12px}}
+  #nowPlaying.paused .eq span{animation-play-state:paused;height:4px}
+  #muteBtn{background:none;border:none;cursor:pointer;font-size:1rem;line-height:1;padding:.2rem}
+  #nowPlaying a{color:var(--gold);text-decoration:none}
+  #nowPlaying.fallback .eq span{animation-play-state:paused;height:4px}
+</style>
+</head>
+<body>
+
+<div id="bg"></div>
+<div id="scrim"></div>
+
+<!-- Écran d'entrée -->
+<div id="entry">
+  <div>
+    <div class="emoji">🌊</div>
+    <h1>L'enfant et la rivière</h1>
+    <p class="subtitle">je ne contrôle pas tout.</p>
+    <br>
+    <button id="enterBtn">▶ Se laisser porter</button>
+    <p class="hint">musique : Fearless Soul — One of the Most Beautiful Songs Ever Made</p>
+  </div>
+</div>
+
+<!-- Contenu -->
+<div id="stage" hidden>
+  <div id="playerWrap"><div id="player"></div></div>
+
+  <nav class="backnav"><a href="index.html">← Toutes les métaphores</a></nav>
+
+  <main>
+    <p class="kicker">Une métaphore</p>
+    <h1 class="title">🌊 L'enfant et la rivière :<br>je ne contrôle pas tout.</h1>
+    <p class="intro-lead">Imagine un enfant qui arrive devant une grande rivière.<br><br>Il veut atteindre l'autre rive.</p>
+
+    <section>
+      <h2><span class="num">1.</span>Les questions</h2>
+      <p>Alors il commence à réfléchir :</p>
+      <p class="dialogue">« Est-ce que le courant va m'amener au bon endroit ? »<br><br>« Et si la rivière tourne ? »<br><br>« Et si je me trompe de direction ? »<br><br>« Et si je n'arrive pas exactement où je veux ? »</p>
+    </section>
+
+    <section>
+      <h2><span class="num">2.</span>Lutter contre le courant</h2>
+      <p>Alors il essaie de contrôler chaque mouvement de l'eau.</p>
+      <p>Il pousse.</p>
+      <p>Il lutte.</p>
+      <p>Il regarde constamment en avant pour essayer de <strong>deviner</strong> où la rivière va l'amener.</p>
+      <p>Et plus il essaie de contrôler le courant, plus il s'épuise.</p>
+    </section>
+
+    <section>
+      <h2><span class="num">3.</span>La rivière coulait déjà</h2>
+      <p>Puis il remarque quelque chose.</p>
+      <blockquote class="pull">La rivière coulait déjà.</blockquote>
+      <p>Elle n'avait jamais eu besoin de lui pour avancer.</p>
+      <p>Alors il fait ce qui lui appartient :</p>
+      <p>Il choisit une direction.</p>
+      <p>Il nage.</p>
+      <p>Il ajuste sa trajectoire.</p>
+      <p>Il fait attention aux rochers.</p>
+      <p>Il utilise ses forces.</p>
+      <blockquote class="pull">Mais il cesse d'essayer de contrôler la rivière.</blockquote>
+      <p>Et pour la première fois, il respire.</p>
+      <p>Il sent l'eau sur son corps.</p>
+      <p>Il entend les oiseaux.</p>
+      <p>Il sent le soleil sur sa peau.</p>
+      <p>Et il comprend :</p>
+      <blockquote class="pull">« Je peux diriger ma nage sans avoir besoin de diriger la rivière. »</blockquote>
+    </section>
+
+    <div class="conclusion">
+      <h2 style="color:var(--gold);font-weight:normal;font-size:1.6rem;margin-bottom:1.5rem;">Profiter du voyage</h2>
+      <p>L'enfant continua son chemin sur la rivière.</p>
+      <p>Mais maintenant, il ne cherchait plus à contrôler chaque mouvement de l'eau.</p>
+      <p>Il nageait lorsqu'il devait nager.</p>
+      <p>Il évitait les rochers.</p>
+      <p>Il choisissait sa direction lorsque c'était possible.</p>
+      <p>Mais il laissait aussi la rivière le porter.</p>
+      <p>Et quelque chose d'étrange se produisit.</p>
+      <p><strong>Pour la première fois, il remarqua tout ce que la rivière lui apportait.</strong></p>
+      <p>Une fleur passa près de lui.</p>
+      <p>Puis un petit objet brillant accroché dans les branches d'un arbre.</p>
+      <p>Plus loin, il aperçut un autre enfant qui riait sur la rive.</p>
+      <p>Chaque fois qu'il cessait de regarder uniquement l'endroit où il voulait arriver, il découvrait quelque chose qu'il n'avait jamais prévu.</p>
+      <p>Alors il comprit :</p>
+      <blockquote class="pull">« Peut-être que je n'ai pas besoin de connaître le chemin pour profiter du voyage. »</blockquote>
+      <p class="sig">— Gabriel, octobre 2026</p>
+    </div>
+
+  </main>
+
+  <footer>Musique : Fearless Soul — « One of the Most Beautiful Songs Ever Made » (via YouTube)</footer>
+
+  <div id="nowPlaying" hidden>
+    <span class="eq"><span></span><span></span><span></span></span>
+    <span>Fearless Soul — One of the Most Beautiful Songs Ever Made</span>
+    <button id="muteBtn" title="Son on/off">🔊</button>
+    <a href="https://www.youtube.com/watch?v=O40ruQpZogY" target="_blank" rel="noopener" title="Ouvrir sur YouTube">↗</a>
+    <span id="fallbackMsg" hidden style="color:#e0a0a0;">&nbsp;— lecture bloquée ici, <a href="https://www.youtube.com/watch?v=O40ruQpZogY" target="_blank" rel="noopener" style="color:#e0a0a0;text-decoration:underline;">écoute sur YouTube</a></span>
+  </div>
+</div>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+  var player = null, playerReady = false, apiReady = false, pendingPlay = false, muted = false, plainMode = false;
+  var VIDEO_ID = 'O40ruQpZogY';
+  var IS_FILE = window.location.protocol === 'file:';
+
+  // champ d'étoiles scintillantes
+  (function(){
+    var tints=['255,255,255','255,255,255','200,220,255','255,230,190','255,200,220'];
+    for(var i=0;i<140;i++){
+      var d=document.createElement('div');
+      d.className='star';
+      var s=(Math.random()<0.12)?2.5+Math.random()*2:1+Math.random()*1.6;
+      d.style.width=d.style.height=s+'px';
+      var c=tints[Math.floor(Math.random()*tints.length)];
+      d.style.background='rgb('+c+')';
+      d.style.boxShadow='0 0 '+(s*2)+'px rgba('+c+',.8)';
+      d.style.left=(Math.random()*100)+'vw';
+      d.style.top=(Math.random()*100)+'vh';
+      d.style.animationDuration=(2+Math.random()*4)+'s';
+      d.style.animationDelay=(Math.random()*5)+'s';
+      document.body.appendChild(d);
+    }
+  })();
+
+  function plainIframe(){
+    // repli sans API JS : fonctionne partout, y compris en fichier local (file://)
+    var wrap = document.getElementById('playerWrap');
+    wrap.innerHTML = '<iframe width="2" height="2" src="https://www.youtube.com/embed/'+VIDEO_ID+'?autoplay=1&loop=1&playlist='+VIDEO_ID+'&rel=0" frameborder="0" allow="autoplay; encrypted-media"></iframe>';
+    plainMode = true;
+    var mb = document.getElementById('muteBtn');
+    if(mb) mb.style.display = 'none';
+  }
+
+  function createPlayer(){
+    if(IS_FILE){ plainIframe(); return; } // l'API JS YouTube est capricieuse en file://
+    try{
+      player = new YT.Player('player', {
+        videoId: VIDEO_ID,
+        playerVars:{autoplay:1, loop:1, playlist:VIDEO_ID, rel:0, controls:0, modestbranding:1},
+        events:{ 'onReady': function(e){
+          playerReady = true;
+          try{ e.target.setVolume(70); }catch(_){}
+          e.target.playVideo();
+        },
+        'onError': function(){ showFallback(); } }
+      });
+      // sécurité : si onReady ne se déclenche jamais, basculer en lecteur simple
+      setTimeout(function(){
+        if(!playerReady && !plainMode){
+          try{ if(player && player.destroy) player.destroy(); }catch(_){}
+          plainIframe();
+        }
+      }, 7000);
+    }catch(_){ plainIframe(); }
+  }
+  function onYouTubeIframeAPIReady(){
+    apiReady = true;
+    if(pendingPlay){ pendingPlay=false; createPlayer(); }
+  }
+  // si l'API YouTube ne charge pas du tout : en local on tente le lecteur simple, sinon on propose le lien direct
+  setTimeout(function(){
+    if(pendingPlay && !playerReady && !plainMode){
+      if(IS_FILE){ pendingPlay=false; plainIframe(); }
+      else{ showFallback(); }
+    }
+  }, 8000);
+
+  function showFallback(){
+    var pill=document.getElementById('nowPlaying');
+    if(pill){ pill.classList.add('fallback'); }
+    var msg=document.getElementById('fallbackMsg');
+    if(msg){ msg.hidden=false; }
+  }
+
+  document.getElementById('enterBtn').addEventListener('click', function(){
+    var entry=document.getElementById('entry');
+    var stage=document.getElementById('stage');
+    entry.classList.add('hidden');
+    stage.hidden=false;
+    requestAnimationFrame(function(){ stage.classList.add('visible'); });
+    document.getElementById('nowPlaying').hidden=false;
+    setTimeout(function(){ entry.style.display='none'; },1300);
+    // création AU moment du clic = geste utilisateur : l'autoplay avec son est autorisé
+    if(player){ try{ player.playVideo(); }catch(_){} }
+    else if(IS_FILE){ plainIframe(); }
+    else if(apiReady){ createPlayer(); }
+    else{ pendingPlay=true; }
+  });
+
+  document.getElementById('muteBtn').addEventListener('click', function(){
+    var btn=this, pill=document.getElementById('nowPlaying');
+    if(!playerReady) return;
+    if(muted){ player.unMute(); btn.textContent='🔊'; pill.classList.remove('paused'); }
+    else{ player.mute(); btn.textContent='🔇'; pill.classList.add('paused'); }
+    muted=!muted;
+  });
+</script>
+</body>
+</html>
