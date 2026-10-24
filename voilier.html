@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le voilier et l'univers — apprendre à danser avec la vie</title>
+<style>
+  :root{
+    --ink:#0d0c0a;
+    --paper:#c9c1af;
+    --gold:#d4af6e;
+    --gold-dim:rgba(212,175,110,.35);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:Georgia,'Times New Roman',serif;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  /* ---------- fond d'atelier ---------- */
+  #bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse 50% 35% at 15% 18%, rgba(124,58,190,.38), transparent 70%),
+      radial-gradient(ellipse 45% 40% at 86% 14%, rgba(205,62,142,.30), transparent 70%),
+      radial-gradient(ellipse 55% 45% at 82% 86%, rgba(38,120,185,.32), transparent 70%),
+      radial-gradient(ellipse 48% 38% at 8% 88%, rgba(185,95,45,.24), transparent 70%),
+      radial-gradient(ellipse 42% 32% at 52% 52%, rgba(95,45,170,.28), transparent 70%),
+      radial-gradient(ellipse 120% 100% at 50% 50%, transparent 48%, rgba(0,0,0,.62) 100%),
+      #050509;
+  }
+  #scrim{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(ellipse 62% 74% at 50% 42%, rgba(4,4,8,.60), transparent 72%);
+  }
+  .star{position:fixed;border-radius:50%;z-index:0;pointer-events:none;
+    animation:twinkle ease-in-out infinite;
+  }
+  @keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.95}}
+
+  /* ---------- écran d'entrée ---------- */
+  #entry{
+    position:fixed;inset:0;z-index:10;
+    display:flex;align-items:center;justify-content:center;
+    text-align:center;padding:2rem;
+    background:radial-gradient(ellipse 70% 60% at 50% 40%, rgba(212,175,110,.08), transparent 70%), var(--ink);
+    transition:opacity 1.2s ease;
+  }
+  #entry.hidden{opacity:0;pointer-events:none}
+  #entry .emoji{font-size:4rem;margin-bottom:1rem;filter:drop-shadow(0 0 25px rgba(212,175,110,.35))}
+  #entry h1{font-size:clamp(2.4rem,7vw,4rem);font-weight:normal;letter-spacing:.04em;color:var(--paper)}
+  #entry .subtitle{margin-top:.6rem;font-style:italic;color:#a89d86;font-size:clamp(1rem,3vw,1.25rem)}
+  #enterBtn{
+    margin-top:2.5rem;
+    font-family:Georgia,serif;font-size:1.15rem;letter-spacing:.03em;
+    color:var(--ink);background:linear-gradient(160deg,#e8c987,var(--gold));
+    border:none;border-radius:999px;padding:1rem 2.6rem;cursor:pointer;
+    box-shadow:0 0 35px rgba(212,175,110,.35);
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  #enterBtn:hover{transform:scale(1.05);box-shadow:0 0 55px rgba(212,175,110,.55)}
+  #entry .hint{margin-top:1.6rem;font-size:.85rem;color:#7d7462;font-style:italic}
+
+  /* ---------- contenu ---------- */
+  #stage{position:relative;z-index:1;opacity:0;transition:opacity 1.5s ease}
+  #stage.visible{opacity:1}
+  main{max-width:700px;margin:0 auto;padding:5rem 1.6rem 8rem}
+  main .kicker{text-align:center;font-size:.85rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem}
+  main h1.title{text-align:center;font-weight:normal;font-size:clamp(2rem,6vw,3rem);line-height:1.25;margin-bottom:1rem}
+  main .intro-lead{text-align:center;font-style:italic;color:#a89d86;font-size:1.1rem;line-height:1.8;margin-bottom:4rem;max-width:560px;margin-left:auto;margin-right:auto}
+  section{margin-bottom:3.2rem}
+  section h2{font-weight:normal;font-size:1.55rem;color:var(--gold);margin-bottom:1.2rem;line-height:1.4}
+  section h2 .num{color:var(--gold-dim);margin-right:.5rem}
+  p{font-size:1.1rem;line-height:1.9;margin-bottom:1.1rem;color:var(--paper);text-shadow:0 1px 8px rgba(0,0,0,.6)}
+  p.dialogue{font-style:italic;color:#c2b9a4;padding-left:1rem}
+  blockquote.pull{
+    margin:2rem 0;padding:1.2rem 1.4rem;
+    border-left:3px solid var(--gold);
+    background:rgba(212,175,110,.06);
+    font-size:1.2rem;font-style:italic;line-height:1.75;color:#d8cfba;
+  }
+  .conclusion{text-align:center;margin-top:4rem;padding-top:3rem;border-top:1px solid rgba(212,175,110,.2)}
+  .conclusion .sig{margin-top:2rem;font-size:.9rem;color:#7d7462;font-style:italic}
+  footer{text-align:center;padding:2rem;font-size:.8rem;color:#5d5546;font-style:italic}
+  .backnav{position:relative;z-index:1;max-width:700px;margin:0 auto;padding:1.4rem 1.6rem 0}
+  .backnav a{color:var(--gold);text-decoration:none;font-size:.95rem;font-style:italic;opacity:.85}
+  .backnav a:hover{opacity:1;text-decoration:underline}
+
+  /* ---------- lecteur ---------- */
+  #playerWrap{position:fixed;width:2px;height:2px;opacity:0;pointer-events:none;bottom:0;right:0;z-index:0}
+  #nowPlaying{
+    position:fixed;bottom:1.2rem;right:1.2rem;z-index:5;
+    display:flex;align-items:center;gap:.6rem;
+    background:rgba(13,12,10,.75);border:1px solid rgba(212,175,110,.25);
+    border-radius:999px;padding:.5rem .9rem;
+    font-size:.8rem;color:#a89d86;font-style:italic;
+    backdrop-filter:blur(6px);
+  }
+  #nowPlaying .eq{display:inline-flex;gap:2px;align-items:flex-end;height:12px}
+  #nowPlaying .eq span{width:3px;background:var(--gold);animation:eq 1s ease-in-out infinite}
+  #nowPlaying .eq span:nth-child(2){animation-delay:.2s}
+  #nowPlaying .eq span:nth-child(3){animation-delay:.4s}
+  @keyframes eq{0%,100%{height:4px}50%{height:12px}}
+  #nowPlaying.paused .eq span{animation-play-state:paused;height:4px}
+  #muteBtn{background:none;border:none;cursor:pointer;font-size:1rem;line-height:1;padding:.2rem}
+  #nowPlaying a{color:var(--gold);text-decoration:none}
+  #nowPlaying.fallback .eq span{animation-play-state:paused;height:4px}
+</style>
+</head>
+<body>
+
+<div id="bg"></div>
+<div id="scrim"></div>
+
+<!-- Écran d'entrée -->
+<div id="entry">
+  <div>
+    <div class="emoji">🌌</div>
+    <h1>Le voilier et l'univers</h1>
+    <p class="subtitle">apprendre à danser avec la vie.</p>
+    <br>
+    <button id="enterBtn">▶ Déployer ses voiles</button>
+    <p class="hint">musique : Sunbyonic — Behavior of curve</p>
+  </div>
+</div>
+
+<!-- Contenu -->
+<div id="stage" hidden>
+  <div id="playerWrap"><div id="player"></div></div>
+
+  <nav class="backnav"><a href="index.html">← Toutes les métaphores</a></nav>
+
+  <main>
+    <p class="kicker">Une métaphore</p>
+    <h1 class="title">🌌 Le voilier et l'univers :<br>apprendre à danser avec la vie.</h1>
+    <p class="intro-lead">Imagine un petit voilier qui navigue sur un océan immense.<br><br>Au-dessus de lui s'étend un univers infini, rempli d'étoiles, de planètes et de galaxies dont il ne pourrait jamais mesurer toute la grandeur.<br><br>Pourtant, le voilier ne regarde presque jamais le ciel.<br><br>Il a d'autres préoccupations.<br><br>Il doit apprendre à naviguer, éviter les tempêtes, réparer les dommages causés par les vagues et trouver sa place parmi les autres bateaux.<br><br>Depuis qu'il est petit, il a appris à naviguer en observant ceux qui l'entourent.<br><br>Ses premiers navigateurs lui ont transmis tout ce qu'ils savaient. Ils lui ont appris à reconnaître les dangers, à se méfier des eaux profondes et à garder ses voiles repliées lorsque le vent devenait trop fort.<br><br>Ils avaient eux-mêmes traversé des océans difficiles.<br><br>Certains avaient connu des tempêtes qui les avaient profondément marqués. D'autres avaient appris à naviguer dans la peur, parce qu'ils n'avaient jamais connu autre chose.<br><br>Ils voulaient protéger le petit voilier. Mais sans le savoir, ils lui transmettaient aussi leurs inquiétudes, leurs limites et leurs blessures.<br><br>Alors, au fil du temps, le voilier a commencé à croire que l'océan était un endroit dangereux, que le vent était imprévisible et que les tempêtes étaient la preuve qu'il ne savait pas naviguer correctement.<br><br>Il a fini par oublier pourquoi il avait voulu prendre la mer.<br><br>Au lieu de découvrir le monde, il s'est mis à chercher comment devenir un meilleur bateau.<br><br>Il observait les autres voiliers.<br><br>Certains naviguaient plus vite que lui. D'autres semblaient toujours savoir où aller. Quelques-uns avaient de magnifiques voiles et parcouraient des distances impressionnantes.<br><br>En les regardant, il a commencé à croire qu'il devait leur ressembler.<br><br>Il a travaillé sans relâche pour améliorer sa coque, renforcer ses mâts et perfectionner ses voiles.<br><br>Il pensait que lorsqu'il serait suffisamment solide, suffisamment performant et suffisamment exceptionnel, il pourrait enfin se permettre de profiter de l'océan.<br><br>Mais chaque fois qu'il atteignait un objectif, un autre apparaissait à l'horizon.<br><br>Chaque fois qu'il se croyait enfin à la hauteur, il découvrait un autre voilier qui semblait avoir quelque chose de plus.<br><br>Et plus il essayait de devenir un bateau digne de naviguer, plus il oubliait de naviguer.<br><br>Il ne cherchait plus à découvrir le monde.<br><br><strong>Il cherchait à prouver qu'il méritait d'y être.</strong></p>
+
+    <section>
+      <h2><span class="num">1.</span>La tempête</h2>
+      <p>Un jour, une tempête particulièrement violente s'abattit sur lui.</p>
+      <p>Les vagues frappaient sa coque. Le vent déchirait ses voiles et l'eau envahissait le pont.</p>
+      <p>Il fit tout ce qu'il avait appris à faire.</p>
+      <p>Il lutta. Il résista. Il tenta de contrôler chaque mouvement de son bateau.</p>
+      <p>Mais la tempête était plus forte que lui.</p>
+      <p>Épuisé, il finit par se demander s'il avait réellement sa place sur cet océan.</p>
+      <p>Pourquoi les autres semblaient-ils avancer alors qu'il devait lutter aussi fort simplement pour rester à flot ?</p>
+      <p>Pourquoi, malgré tous ses efforts, avait-il encore si peur ?</p>
+      <p>Et surtout, combien de temps devrait-il encore se battre avant de pouvoir enfin être heureux ?</p>
+      <p>Il n'avait pas de réponse.</p>
+      <p>Alors il continua d'avancer, parce qu'il ne connaissait pas d'autre façon de faire.</p>
+      <blockquote class="pull">Il ignorait encore que certaines blessures ne se réparent pas en travaillant davantage. Que certaines peurs ne disparaissent pas en devenant plus performant.</blockquote>
+      <p>Et que certaines choses qu'il considérait comme des défauts étaient peut-être simplement des réflexes qu'il avait appris pour survivre dans des eaux difficiles.</p>
+      <p>Il lui faudrait du temps pour le comprendre.</p>
+      <p>Et il lui faudrait aussi découvrir qu'il n'avait pas à se reprocher d'avoir appris à naviguer comme il le pouvait.</p>
+    </section>
+
+    <section>
+      <h2><span class="num">2.</span>Les premières étoiles</h2>
+      <p>Au cours des années qui suivirent, quelque chose commença pourtant à changer.</p>
+      <p>De temps à autre, au milieu de son voyage, des événements étranges se produisaient.</p>
+      <p>Un vent se levait alors qu'il pensait ne plus pouvoir avancer.</p>
+      <p>Une rencontre survenait au moment où il avait besoin d'entendre certaines paroles.</p>
+      <p>Une idée apparaissait dans son esprit et lui ouvrait une direction qu'il n'avait jamais envisagée.</p>
+      <p>Parfois, des événements se produisaient qu'il ne parvenait tout simplement pas à expliquer.</p>
+      <p>Il ne savait pas quoi en penser.</p>
+      <p class="dialogue">Était-ce le hasard ? Était-ce simplement la vie qui suivait son cours ? Ou existait-il quelque chose de plus grand, une présence bienveillante qui l'accompagnait d'une manière qu'il ne comprenait pas ?</p>
+      <p>Il n'en savait rien.</p>
+      <p>Mais certains de ces moments lui laissaient une impression profonde.</p>
+      <p>Comme si, pendant un instant, il n'était plus tout à fait seul sur l'océan.</p>
+      <p>Il ne pouvait pas prouver ce qu'ils signifiaient. Il ne savait pas s'ils avaient été placés sur son chemin pour une raison.</p>
+      <p>Pourtant, il commençait à envisager une possibilité qu'il n'avait jamais vraiment considérée.</p>
+      <p class="dialogue">Et si la vie pouvait lui réserver autre chose que ce qu'il avait appris à craindre ?</p>
+      <p class="dialogue">Et si son histoire ne se résumait pas aux tempêtes qu'il avait traversées ?</p>
+      <p>Cette idée ne changea pas immédiatement son voyage.</p>
+      <p>Mais elle lui donna envie de lever les yeux.</p>
+      <blockquote class="pull">Et, pour la première fois depuis longtemps, il remarqua les étoiles.</blockquote>
+    </section>
+
+    <section>
+      <h2><span class="num">3.</span>L'univers qui l'invitait à découvrir</h2>
+      <p>Il avait toujours su que les étoiles existaient.</p>
+      <p>Mais il les avait considérées comme des lumières lointaines, belles peut-être, mais sans rapport avec son quotidien.</p>
+      <p>Maintenant, il se demandait si elles pouvaient représenter quelque chose de plus.</p>
+      <p>Il observa les constellations, les galaxies et les planètes qui parcouraient leur chemin dans l'immensité.</p>
+      <p>Et il se mit à imaginer que cet univers n'était peut-être pas aussi indifférent qu'il l'avait cru.</p>
+      <p>Peut-être existait-il une intelligence bienveillante derrière cette immensité.</p>
+      <p>Peut-être que la vie essayait de lui montrer des possibilités qu'il ne pouvait pas encore voir.</p>
+      <p>Peut-être que certaines rencontres, certaines idées et certains élans de curiosité étaient des invitations à explorer des chemins qui lui correspondaient davantage.</p>
+      <p>Il ne savait pas si cette interprétation était juste.</p>
+      <p>Mais il découvrit qu'il pouvait l'explorer sans avoir besoin de tout comprendre.</p>
+      <p>Alors, un matin, lorsqu'une brise légère se leva et qu'une envie nouvelle apparut en lui, il prit une décision.</p>
+      <blockquote class="pull">Au lieu de chercher toutes les raisons pour lesquelles il devrait s'en méfier, il déploya une voile.</blockquote>
+      <p>Le vent le poussa doucement vers une partie de l'océan qu'il ne connaissait pas.</p>
+      <p>Et il partit à la découverte.</p>
+    </section>
+
+    <section>
+      <h2><span class="num">4.</span>Apprendre à danser avec l'univers</h2>
+      <p>Au début, le voilier cherchait encore à comprendre exactement où le vent voulait le conduire.</p>
+      <p>Chaque fois qu'une brise se levait, il se demandait si elle lui indiquait sa véritable destination.</p>
+      <p>Chaque fois qu'il rencontrait une nouvelle étoile, il essayait de déchiffrer le message qu'elle pouvait contenir.</p>
+      <p>Il voulait tellement comprendre le voyage qu'il risquait de retomber dans son ancienne habitude : chercher la bonne réponse avant de s'autoriser à avancer.</p>
+      <p>Puis, progressivement, il découvrit une autre façon de naviguer.</p>
+      <p>Il comprit qu'il pouvait simplement écouter le vent.</p>
+      <p>Lorsqu'une brise l'attirait vers un nouvel horizon, il pouvait choisir de la suivre.</p>
+      <p>Lorsqu'une direction ne lui plaisait pas, il pouvait ajuster ses voiles.</p>
+      <p>Lorsqu'un chemin cessait de lui correspondre, il pouvait en explorer un autre.</p>
+      <p>Il n'avait pas besoin de considérer chaque événement comme un ordre. Il pouvait recevoir une possibilité sans être obligé de la saisir.</p>
+      <p>Il pouvait accueillir une idée, découvrir ce qu'elle éveillait en lui et décider librement de ce qu'il voulait en faire.</p>
+      <p>Peu à peu, la navigation changea de sens.</p>
+      <p>Auparavant, il essayait de contrôler le vent pour être certain d'arriver au bon endroit.</p>
+      <blockquote class="pull">Maintenant, il apprenait à danser avec lui.</blockquote>
+      <p>Le vent proposait une direction.</p>
+      <p>Le voilier choisissait de déployer ses voiles.</p>
+      <p>Et ensemble, ils découvraient ce qui se trouvait au-delà de l'horizon.</p>
+      <p>Il ne savait toujours pas exactement où il allait.</p>
+      <p>Mais il n'avait plus besoin de le savoir pour apprécier le voyage.</p>
+    </section>
+
+    <section>
+      <h2><span class="num">5.</span>Il n'avait jamais eu besoin de mériter l'océan</h2>
+      <p>Un soir, alors qu'il naviguait sous un ciel magnifique, le voilier contempla longuement les étoiles.</p>
+      <p>Il repensa à toutes ces années passées à essayer de devenir un meilleur bateau.</p>
+      <p>À toutes ces fois où il s'était comparé aux autres.</p>
+      <p>À toutes ces journées où il avait cru qu'il devait accomplir davantage avant de pouvoir être fier de lui.</p>
+      <p>Il avait passé tant de temps à essayer de devenir exceptionnel qu'il avait oublié une chose essentielle.</p>
+      <p>Il était déjà là.</p>
+      <p>Il faisait déjà partie de cet océan.</p>
+      <blockquote class="pull">Il n'avait pas eu besoin de prouver sa valeur pour avoir le droit de naviguer sous les étoiles.</blockquote>
+      <p>Il n'avait pas eu besoin d'être le plus rapide, le plus solide ou le plus admiré.</p>
+      <p>Il n'avait pas eu besoin de devenir un autre voilier.</p>
+      <p>Il avait simplement besoin de redécouvrir le plaisir de naviguer selon sa propre nature.</p>
+      <p>Et peut-être que les blessures qui lui avaient fait oublier cette vérité n'étaient pas la preuve qu'il était défectueux.</p>
+      <p>Peut-être étaient-elles les traces d'un voyage difficile, d'une histoire qu'il n'avait pas choisie, de peurs et de croyances qu'il pouvait maintenant apprendre à déposer.</p>
+      <p>Il n'avait pas à détester le bateau qu'il avait été pour devenir celui qu'il souhaitait être.</p>
+      <p>Il pouvait prendre soin de lui, réparer ce qui avait besoin de l'être et retirer progressivement ce qui l'empêchait d'avancer librement.</p>
+      <p>Il pouvait cesser de se battre contre lui-même.</p>
+      <p>Et commencer à vivre.</p>
+    </section>
+
+    <section>
+      <h2><span class="num">6.</span>Le merveilleux n'attend pas toujours à destination</h2>
+      <p>À mesure qu'il poursuivait son voyage, le voilier découvrit des îles magnifiques, rencontra d'autres navigateurs et explora des horizons dont il n'avait jamais soupçonné l'existence.</p>
+      <p>Certaines journées étaient remplies de joie.</p>
+      <p>D'autres étaient plus difficiles.</p>
+      <p>Il lui arrivait encore de se sentir perdu. Il lui arrivait de regretter certaines décisions, de ressentir de la tristesse ou de devoir affronter des tempêtes qu'il aurait préféré éviter.</p>
+      <p>Faire confiance à l'océan ne signifiait pas que toutes les vagues étaient agréables.</p>
+      <p>Et il n'avait pas besoin de prétendre que ses souffrances étaient des cadeaux pour continuer à avancer.</p>
+      <p>Il pouvait simplement reconnaître que, même après les moments les plus difficiles, son histoire n'était pas terminée.</p>
+      <p>Il ignorait encore les personnes qu'il rencontrerait.</p>
+      <p>Il ignorait les idées qui lui viendraient à l'esprit, les endroits qu'il découvrirait et les joies qu'il n'avait pas encore eu la chance de connaître.</p>
+      <p>Il ignorait tout ce que la vie pouvait encore lui offrir.</p>
+      <p>Mais il avait appris à ne plus confondre ce qu'il voyait aujourd'hui avec tout ce qui pouvait exister demain.</p>
+      <p>Et cette découverte lui donna une nouvelle forme d'espoir.</p>
+      <blockquote class="pull">Il n'avait pas besoin de savoir quelles merveilles l'attendaient. Il pouvait simplement rester curieux.</blockquote>
+      <p>Cependant, une autre découverte l'attendait.</p>
+      <p>Un matin, alors qu'il naviguait sur une mer calme, il sentit le vent caresser ses voiles.</p>
+      <p>Le soleil se levait à l'horizon. Les étoiles s'effaçaient lentement, et la lumière dorée illuminait l'océan.</p>
+      <p>Il n'était pas arrivé à destination.</p>
+      <p>Il n'avait pas terminé de guérir ses blessures.</p>
+      <p>Il n'avait pas résolu tous les mystères de l'univers.</p>
+      <p>Pourtant, quelque chose en lui était profondément en paix.</p>
+      <p>Il appréciait le vent.</p>
+      <p>Il appréciait la lumière.</p>
+      <p>Il appréciait simplement le fait d'être là.</p>
+      <p>Et il comprit qu'il n'avait pas besoin d'attendre qu'une chose extraordinaire se produise pour apprécier son existence.</p>
+      <blockquote class="pull">Le merveilleux n'était pas uniquement ce qu'il espérait découvrir au bout de son voyage. Il pouvait aussi se trouver dans ce qu'il vivait déjà.</blockquote>
+      <p>Dans une rencontre inattendue.</p>
+      <p>Dans une idée qui l'intriguait.</p>
+      <p>Dans un moment de rire.</p>
+      <p>Dans la beauté d'un ciel étoilé.</p>
+      <p>Dans la paix qu'il ressentait lorsqu'il cessait de lutter contre lui-même.</p>
+      <p>Et peut-être, pensa-t-il, que cette présence bienveillante qu'il associait à l'univers ne lui demandait pas seulement de garder espoir pour demain.</p>
+      <p>Peut-être pouvait-il déjà accueillir ce qu'elle représentait pour lui, ici et maintenant.</p>
+    </section>
+
+    <div class="conclusion">
+      <h2 style="color:var(--gold);font-weight:normal;font-size:1.6rem;margin-bottom:1.5rem;">Le voyage continue</h2>
+      <p>Le voilier regarda une dernière fois l'horizon.</p>
+      <p>Il savait maintenant que d'autres tempêtes viendraient.</p>
+      <p>Il savait qu'il ne comprendrait jamais tout ce qui se produisait dans cet univers immense.</p>
+      <p>Il savait aussi qu'il ne pourrait pas contrôler toutes les rencontres, toutes les circonstances ni tous les changements qui surviendraient dans sa vie.</p>
+      <p>Mais il n'avait plus besoin de tout contrôler.</p>
+      <p>Il pouvait continuer à apprendre, à explorer, à prendre soin de lui et à choisir les directions qui lui ressemblaient.</p>
+      <p>Il pouvait accueillir les vents favorables sans croire qu'il les méritait davantage que les autres.</p>
+      <p>Il pouvait changer de cap sans se considérer comme un échec.</p>
+      <p>Il pouvait demander de l'aide lorsqu'une tempête devenait trop forte.</p>
+      <p>Et il pouvait garder une place dans son cœur pour le mystère, sans avoir à transformer chaque événement en message.</p>
+      <p>Surtout, il pouvait cesser de remettre son bonheur à plus tard.</p>
+      <p>Il n'avait pas besoin d'attendre de devenir exceptionnel.</p>
+      <p>Il n'avait pas besoin d'attendre d'être parfaitement guéri.</p>
+      <p>Il n'avait pas besoin d'attendre de comprendre sa mission ou de découvrir sa destination.</p>
+      <p>Il pouvait simplement vivre, avec la conviction que son histoire contenait encore des possibilités qu'il ne connaissait pas.</p>
+      <p>Alors il déploya ses voiles.</p>
+      <p>Le vent se leva doucement.</p>
+      <p>Et le voilier se remit à naviguer, non plus pour prouver sa valeur, mais par curiosité pour les merveilles qu'il pourrait rencontrer.</p>
+      <p>Il leva les yeux vers les étoiles et sourit.</p>
+      <p>Il ne savait pas exactement ce que l'univers lui réservait.</p>
+      <p>Mais il était prêt à le découvrir.</p>
+      <p>Car il avait compris que, même s'il ne pouvait pas expliquer tous les mystères de son voyage, il pouvait choisir de faire confiance à la vie, de rester ouvert à ses possibilités et de prendre part à cette danse avec elle.</p>
+      <p>Et tandis qu'il avançait vers l'horizon, une pensée l'accompagna :</p>
+      <blockquote class="pull">Tu n'as pas besoin de devenir quelqu'un d'autre pour mériter l'amour de la vie.</blockquote>
+      <p><strong>Tu n'as pas besoin de connaître ta destination pour commencer à apprécier ton voyage.</strong></p>
+      <p><strong>Et tu n'as pas besoin de voir toutes les merveilles qui t'attendent pour rester ouvert à la possibilité qu'elles existent.</strong></p>
+      <p>Alors, où que tu sois aujourd'hui, quelle que soit la partie de ton voyage que tu traverses, souviens-toi d'une chose :</p>
+      <p>Tu peux encore découvrir des merveilles que tu n'as jamais imaginées.</p>
+      <p>Tu peux encore rencontrer des personnes qui transformeront ton existence.</p>
+      <p>Tu peux encore apprendre à aimer des parties de toi que tu n'as pas encore découvertes.</p>
+      <p>Tu peux encore ressentir une paix que tu croyais inaccessible.</p>
+      <p>Tu peux encore changer de cap.</p>
+      <p>Tu peux encore recommencer.</p>
+      <p>Et tu n'as pas besoin d'attendre demain pour commencer à apprécier la vie qui est déjà là.</p>
+      <blockquote class="pull">Le voyage continue.</blockquote>
+      <p>Le vent souffle.</p>
+      <p>Les étoiles brillent.</p>
+      <blockquote class="pull">Et il y a encore tant de choses merveilleuses à découvrir.</blockquote>
+      <p class="sig">— Gabriel, octobre 2026</p>
+    </div>
+
+  </main>
+
+  <footer>Musique : Sunbyonic — « Behavior of curve » (via YouTube)</footer>
+
+  <div id="nowPlaying" hidden>
+    <span class="eq"><span></span><span></span><span></span></span>
+    <span>Sunbyonic — Behavior of curve</span>
+    <button id="muteBtn" title="Son on/off">🔊</button>
+    <a href="https://www.youtube.com/watch?v=1dxqeJ1Tx_g" target="_blank" rel="noopener" title="Ouvrir sur YouTube">↗</a>
+    <span id="fallbackMsg" hidden style="color:#e0a0a0;">&nbsp;— lecture bloquée ici, <a href="https://www.youtube.com/watch?v=1dxqeJ1Tx_g" target="_blank" rel="noopener" style="color:#e0a0a0;text-decoration:underline;">écoute sur YouTube</a></span>
+  </div>
+</div>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+  var player = null, playerReady = false, apiReady = false, pendingPlay = false, muted = false, plainMode = false;
+  var VIDEO_ID = '1dxqeJ1Tx_g';
+  var IS_FILE = window.location.protocol === 'file:';
+
+  // champ d'étoiles scintillantes
+  (function(){
+    var tints=['255,255,255','255,255,255','200,220,255','255,230,190','255,200,220'];
+    for(var i=0;i<140;i++){
+      var d=document.createElement('div');
+      d.className='star';
+      var s=(Math.random()<0.12)?2.5+Math.random()*2:1+Math.random()*1.6;
+      d.style.width=d.style.height=s+'px';
+      var c=tints[Math.floor(Math.random()*tints.length)];
+      d.style.background='rgb('+c+')';
+      d.style.boxShadow='0 0 '+(s*2)+'px rgba('+c+',.8)';
+      d.style.left=(Math.random()*100)+'vw';
+      d.style.top=(Math.random()*100)+'vh';
+      d.style.animationDuration=(2+Math.random()*4)+'s';
+      d.style.animationDelay=(Math.random()*5)+'s';
+      document.body.appendChild(d);
+    }
+  })();
+
+  function plainIframe(){
+    // repli sans API JS : fonctionne partout, y compris en fichier local (file://)
+    var wrap = document.getElementById('playerWrap');
+    wrap.innerHTML = '<iframe width="2" height="2" src="https://www.youtube.com/embed/'+VIDEO_ID+'?autoplay=1&loop=1&playlist='+VIDEO_ID+'&rel=0" frameborder="0" allow="autoplay; encrypted-media"></iframe>';
+    plainMode = true;
+    var mb = document.getElementById('muteBtn');
+    if(mb) mb.style.display = 'none';
+  }
+
+  function createPlayer(){
+    if(IS_FILE){ plainIframe(); return; } // l'API JS YouTube est capricieuse en file://
+    try{
+      player = new YT.Player('player', {
+        videoId: VIDEO_ID,
+        playerVars:{autoplay:1, loop:1, playlist:VIDEO_ID, rel:0, controls:0, modestbranding:1},
+        events:{ 'onReady': function(e){
+          playerReady = true;
+          try{ e.target.setVolume(70); }catch(_){}
+          e.target.playVideo();
+        },
+        'onError': function(){ showFallback(); } }
+      });
+      // sécurité : si onReady ne se déclenche jamais, basculer en lecteur simple
+      setTimeout(function(){
+        if(!playerReady && !plainMode){
+          try{ if(player && player.destroy) player.destroy(); }catch(_){}
+          plainIframe();
+        }
+      }, 7000);
+    }catch(_){ plainIframe(); }
+  }
+  function onYouTubeIframeAPIReady(){
+    apiReady = true;
+    if(pendingPlay){ pendingPlay=false; createPlayer(); }
+  }
+  // si l'API YouTube ne charge pas du tout : en local on tente le lecteur simple, sinon on propose le lien direct
+  setTimeout(function(){
+    if(pendingPlay && !playerReady && !plainMode){
+      if(IS_FILE){ pendingPlay=false; plainIframe(); }
+      else{ showFallback(); }
+    }
+  }, 8000);
+
+  function showFallback(){
+    var pill=document.getElementById('nowPlaying');
+    if(pill){ pill.classList.add('fallback'); }
+    var msg=document.getElementById('fallbackMsg');
+    if(msg){ msg.hidden=false; }
+  }
+
+  document.getElementById('enterBtn').addEventListener('click', function(){
+    var entry=document.getElementById('entry');
+    var stage=document.getElementById('stage');
+    entry.classList.add('hidden');
+    stage.hidden=false;
+    requestAnimationFrame(function(){ stage.classList.add('visible'); });
+    document.getElementById('nowPlaying').hidden=false;
+    setTimeout(function(){ entry.style.display='none'; },1300);
+    // création AU moment du clic = geste utilisateur : l'autoplay avec son est autorisé
+    if(player){ try{ player.playVideo(); }catch(_){} }
+    else if(IS_FILE){ plainIframe(); }
+    else if(apiReady){ createPlayer(); }
+    else{ pendingPlay=true; }
+  });
+
+  document.getElementById('muteBtn').addEventListener('click', function(){
+    var btn=this, pill=document.getElementById('nowPlaying');
+    if(!playerReady) return;
+    if(muted){ player.unMute(); btn.textContent='🔊'; pill.classList.remove('paused'); }
+    else{ player.mute(); btn.textContent='🔇'; pill.classList.add('paused'); }
+    muted=!muted;
+  });
+</script>
+</body>
+</html>
